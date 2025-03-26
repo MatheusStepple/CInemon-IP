@@ -1,43 +1,57 @@
 import pygame
 
-# Inicialização do game, apenas se ligar na resolução
-pygame.init()
-tela = pygame.display.set_mode((1080, 820))
-pygame.display.set_caption("GABIGOL EU TE AMO")
-relogio = pygame.time.Clock()
-
-# Cores default
-VERDE = (100, 200, 100)
-PRETO = (0, 0, 0)
-
-# Definição e parâmetros do jogador 
-jogador = pygame.Rect(400, 300, 32, 48)  # x, y, largura, altura
-velocidade = 5
-
-# loop de executar o jogo
-executando = True
-while executando:
-
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            executando = False
+class Jogador:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 32, 48)
+        self.velocidade = 5
+        self.cor = (0, 0, 0)
     
-    # Movimento padrão WASD
-    teclas = pygame.key.get_pressed()
-    if teclas[pygame.K_LEFT]: jogador.x -= velocidade
-    if teclas[pygame.K_RIGHT]: jogador.x += velocidade
-    if teclas[pygame.K_UP]: jogador.y -= velocidade
-    if teclas[pygame.K_DOWN]: jogador.y += velocidade
+    def mover(self, teclas):
+        if teclas[pygame.K_LEFT]: self.rect.x -= self.velocidade
+        if teclas[pygame.K_RIGHT]: self.rect.x += self.velocidade
+        if teclas[pygame.K_UP]: self.rect.y -= self.velocidade
+        if teclas[pygame.K_DOWN]: self.rect.y += self.velocidade
+        self._limitar_movimento()
     
-    # Limites da tela
-    jogador.x = max(0, min(jogador.x, 800 - jogador.width))
-    jogador.y = max(0, min(jogador.y, 600 - jogador.height))
+    def _limitar_movimento(self):
+        self.rect.x = max(0, min(self.rect.x, 800 - self.rect.width))
+        self.rect.y = max(0, min(self.rect.y, 600 - self.rect.height))
     
-    # Desenho
-    tela.fill(VERDE)  # Grama fillado na tela inteira (mudar dps)
-    pygame.draw.rect(tela, PRETO, jogador)  # Personagem (ponto preto)
-    
-    pygame.display.flip()
-    relogio.tick(60)
+    def desenhar(self, tela):
+        pygame.draw.rect(tela, self.cor, self.rect)
 
-pygame.quit()
+class Jogo:
+    def __init__(self):
+        pygame.init()
+        self.tela = pygame.display.set_mode((800, 600))
+        pygame.display.set_caption("GABIGOL LINDO")
+        self.relogio = pygame.time.Clock()
+        self.jogador = Jogador(400, 300)
+        self.cor_fundo = (100, 200, 100)
+        self.executando = True
+    
+    def rodar(self):
+        while self.executando:
+            self._processar_eventos()
+            self._atualizar()
+            self._desenhar()
+            self.relogio.tick(60)
+        pygame.quit()
+    
+    def _processar_eventos(self):
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                self.executando = False
+    
+    def _atualizar(self):
+        teclas = pygame.key.get_pressed()
+        self.jogador.mover(teclas)
+    
+    def _desenhar(self):
+        self.tela.fill(self.cor_fundo)
+        self.jogador.desenhar(self.tela)
+        pygame.display.flip()
+
+if __name__ == "__main__":
+    jogo = Jogo()
+    jogo.rodar()
