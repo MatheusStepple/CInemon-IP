@@ -83,7 +83,14 @@ class Inimigo:
         self.x = x
         self.y = y
         self.rect = pygame.Rect(x, y, 40, 60)
-        self.cor = VERMELHO if nome == 'Pedro' else LARANJA
+        if nome == 'Pedro':
+            self.cor = VERMELHO
+        elif nome == 'pooh':
+            self.cor = VERDE
+        elif nome == 'Gusto':
+            self.cor = LARANJA
+        else:
+            self.cor = CINZA
         self.nome = nome
         
     def desenhar(self, tela, camera):
@@ -126,6 +133,7 @@ class Jogo:
         self.jogador = Personagem(self.map_width//2, self.map_height//2, self.map_width, self.map_height)
         self.pedro = Inimigo(500, 500, 'Pedro')
         self.gusto = Inimigo(700, 500, 'Gusto')
+        self.pooh = Inimigo(900, 500, 'pooh')
         self.camera = pygame.Rect(0, 0, LARGURA, ALTURA)
         
         self.inimigo_atual = None
@@ -137,6 +145,8 @@ class Jogo:
         ]
         self.gusto_cinemons = [
             CInemon("Discretex", "ESPECIAL", 15, 200, [("Dano Imoral", 30), ("Chama", 40)])
+        ]
+        self.pooh_cinemons = [CInemon("Discretex", "ESPECIAL", 15, 20, [("Dano Imoral", 30), ("Chama", 40)])
         ]
         self.em_batalha = False
         self.turno_jogador = True
@@ -152,6 +162,7 @@ class Jogo:
         self.dialogo_atual = 0
         self.batalha_vencida_pedro = False
         self.batalha_vencida_gusto = False
+        self.batalha_vencida_pooh  = False
 
     def criar_cinemons_disponiveis(self):
         return [
@@ -170,6 +181,7 @@ class Jogo:
     def verificar_colisao(self):
         distancia_pedro = math.sqrt((self.jogador.x - self.pedro.x)**2 + (self.jogador.y - self.pedro.y)**2)
         distancia_gusto = math.sqrt((self.jogador.x - self.gusto.x)**2 + (self.jogador.y - self.gusto.y)**2)
+        distancia_pooh = math.sqrt((self.jogador.x - self.pooh.x)**2 + (self.jogador.y - self.pooh.y)**2)
         
         if (distancia_pedro < self.distancia_batalha and not self.em_batalha 
                 and len(self.jogador_cinemons) > 0 and not self.batalha_vencida_pedro):
@@ -190,6 +202,17 @@ class Jogo:
                 "Gusto: Como você ousa falar mal de front end",
                 "Gusto: Prepare-se para enfrentar as consequências!",
                 "Gusto: Vamos resolver isso com uma batalha de CInemons!"
+            ]
+            self.dialogo_atual = 0
+            self.estado = "dialogo"
+            self.aguardando_espaco = True
+        if (distancia_pooh < self.distancia_batalha and not self.em_batalha 
+                and len(self.jogador_cinemons) > 0 and not self.batalha_vencida_pooh):
+            self.inimigo_atual = 'pooh'
+            self.mensagem_dialogo = [
+                "pooh: como você ousa falar mal do meu lol",
+                "pooh: Prepare-se para enfrentar as consequências!",
+                "pooh: Vamos resolver isso com uma batalha de CInemons!"
             ]
             self.dialogo_atual = 0
             self.estado = "dialogo"
@@ -270,6 +293,8 @@ class Jogo:
             self.cinemon_inimigo_atual = self.pedro_cinemons[0]
         elif self.inimigo_atual == 'Gusto':
             self.cinemon_inimigo_atual = self.gusto_cinemons[0]
+        elif self.inimigo_atual == 'pooh':
+            self.cinemon_inimigo_atual = self.pooh_cinemons[0]
         self.mensagem_atual = f"{self.inimigo_atual} enviou {self.cinemon_inimigo_atual.nome}!"
         self.aguardando_espaco = True
 
@@ -345,7 +370,13 @@ class Jogo:
                 self.mensagem_atual += "\nVocê perdeu a batalha!"
 
     def proximo_inimigo(self):
-        inimigos = self.pedro_cinemons if self.inimigo_atual == 'Pedro' else self.gusto_cinemons
+        if self.inimigo_atual == 'Pedro':
+            inimigos = self.pedro_cinemons
+        if self.inimigo_atual == 'pooh':
+            inimigos = self.pooh_cinemons
+        if self.inimigo_atual == 'gusto':
+            inimigos = self.gusto_cinemons
+        
         for cinemon in inimigos:
             if cinemon.hp > 0:
                 self.cinemon_inimigo_atual = cinemon
@@ -360,6 +391,8 @@ class Jogo:
             self.batalha_vencida_pedro = True
         elif self.inimigo_atual == 'Gusto':
             self.batalha_vencida_gusto = True
+        elif self.inimigo_atual == 'pooh':
+            self.batalha_vencida_pooh = True
         self.mensagem_atual = "Você venceu a batalha!"
         self.aguardando_espaco = True
 
@@ -511,6 +544,8 @@ class Jogo:
         
         self.pedro.desenhar(tela, self.camera)
         self.gusto.desenhar(tela, self.camera)
+        self.pooh.desenhar(tela, self.camera)
+        
         self.jogador.desenhar(tela, self.camera)
         
         instrucao = fonte.render("Use WASD ou setas para mover. ESC para voltar ao menu", True, BRANCO)
@@ -527,6 +562,9 @@ class Jogo:
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 50))
         if self.batalha_vencida_gusto:
             mensagem = fonte.render("Você já derrotou Gusto!", True, VERMELHO)
+            tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 70))
+        if self.batalha_vencida_pooh:
+            mensagem = fonte.render("Você já derrotou pooh!", True, VERMELHO)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 70))
 
     def rodar(self):
