@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import math
+from pytmx.util_pygame import load_pygame
 
 # Inicialização
 pygame.init()
@@ -36,19 +37,20 @@ SISTEMA_DE_TIPOS = {
 }
 
 class Personagem:
-    def __init__(self, x, y):
+    def __init__(self, x, y, map_width, map_height):
         self.x = x
         self.y = y
         self.velocidade = 5
         self.rect = pygame.Rect(x, y, 40, 60)
         self.cor = AZUL
         self.direcao = "baixo"
+        self.map_width = map_width
+        self.map_height = map_height
         
     def mover(self, dx, dy):
         self.x += dx * self.velocidade
         self.y += dy * self.velocidade
         
-        # Atualiza a direção
         if dx > 0:
             self.direcao = "direita"
         elif dx < 0:
@@ -58,41 +60,43 @@ class Personagem:
         elif dy < 0:
             self.direcao = "cima"
             
-        # Mantém dentro da tela
-        self.x = max(0, min(LARGURA - 40, self.x))
-        self.y = max(0, min(ALTURA - 60, self.y))
-        
+        self.x = max(0, min(self.map_width - 40, self.x))
+        self.y = max(0, min(self.map_height - 60, self.y))
         self.rect = pygame.Rect(self.x, self.y, 40, 60)
     
-    def desenhar(self, tela):
-        pygame.draw.rect(tela, self.cor, self.rect)
-        # Desenha cabeça
-        pygame.draw.circle(tela, (255, 200, 150), (self.x + 20, self.y + 15), 10)
+    def desenhar(self, tela, camera):
+        rect_tela = pygame.Rect(self.x - camera.x, self.y - camera.y, 40, 60)
+        pygame.draw.rect(tela, self.cor, rect_tela)
+        pygame.draw.circle(tela, (255, 200, 150), 
+                         (self.x - camera.x + 20, self.y - camera.y + 15), 10)
         
-        # Desenha olhos baseado na direção
         if self.direcao == "direita":
-            pygame.draw.circle(tela, PRETO, (self.x + 25, self.y + 13), 3)
+            pygame.draw.circle(tela, PRETO, (self.x - camera.x + 25, self.y - camera.y + 13), 3)
         elif self.direcao == "esquerda":
-            pygame.draw.circle(tela, PRETO, (self.x + 15, self.y + 13), 3)
+            pygame.draw.circle(tela, PRETO, (self.x - camera.x + 15, self.y - camera.y + 13), 3)
         else:
-            pygame.draw.circle(tela, PRETO, (self.x + 17, self.y + 13), 3)
-            pygame.draw.circle(tela, PRETO, (self.x + 23, self.y + 13), 3)
+            pygame.draw.circle(tela, PRETO, (self.x - camera.x + 17, self.y - camera.y + 13), 3)
+            pygame.draw.circle(tela, PRETO, (self.x - camera.x + 23, self.y - camera.y + 13), 3)
 
 class Inimigo:
-    def __init__(self, x, y,nome):
+    def __init__(self, x, y, nome):
         self.x = x
         self.y = y
         self.rect = pygame.Rect(x, y, 40, 60)
         self.cor = VERMELHO if nome == 'Pedro' else LARANJA
+        self.nome = nome
         
-    def desenhar(self, tela):
-        pygame.draw.rect(tela, self.cor, self.rect)
-        # Desenha cabeça do Pedro
-        pygame.draw.circle(tela, (200, 150, 100), (self.x + 20, self.y + 15), 10)
-        # Desenha óculos
-        pygame.draw.rect(tela, PRETO, (self.x + 10, self.y + 10, 20, 5), 2)
-        pygame.draw.rect(tela, PRETO, (self.x + 5, self.y + 10, 5, 5), 2)
-        pygame.draw.rect(tela, PRETO, (self.x + 25, self.y + 10, 5, 5), 2)
+    def desenhar(self, tela, camera):
+        rect_tela = pygame.Rect(self.x - camera.x, self.y - camera.y, 40, 60)
+        pygame.draw.rect(tela, self.cor, rect_tela)
+        pygame.draw.circle(tela, (200, 150, 100), 
+                         (self.x - camera.x + 20, self.y - camera.y + 15), 10)
+        pygame.draw.rect(tela, PRETO, 
+                        (self.x - camera.x + 10, self.y - camera.y + 10, 20, 5), 2)
+        pygame.draw.rect(tela, PRETO, 
+                        (self.x - camera.x + 5, self.y - camera.y + 10, 5, 5), 2)
+        pygame.draw.rect(tela, PRETO, 
+                        (self.x - camera.x + 25, self.y - camera.y + 10, 5, 5), 2)
 
 class CInemon:
     def __init__(self, nome, tipo, nivel, hp, ataques):
@@ -114,9 +118,16 @@ class CInemon:
 class Jogo:
     def __init__(self):
         self.estado = "menu"
-        self.jogador = Personagem(LARGURA//2, ALTURA//2)
-        self.pedro = Inimigo(LARGURA//4, ALTURA//4, 'Pedro')
-        self.gusto = Inimigo(LARGURA//2 + 100 , ALTURA//4, 'Gusto')
+        # Carrega o mapa TMX
+        self.tmx_data = load_pygame(r'C:\Users\gmome\Desktop\CInemon-IP\projetoip\data\basic.tmx')  # Ajuste o caminho
+        self.map_width = self.tmx_data.width * self.tmx_data.tilewidth
+        self.map_height = self.tmx_data.height * self.tmx_data.tileheight
+        
+        self.jogador = Personagem(self.map_width//2, self.map_height//2, self.map_width, self.map_height)
+        self.pedro = Inimigo(500, 500, 'Pedro')
+        self.gusto = Inimigo(700, 500, 'Gusto')
+        self.camera = pygame.Rect(0, 0, LARGURA, ALTURA)
+        
         self.inimigo_atual = None
         self.jogador_cinemons = []
         self.cinemons_disponiveis = self.criar_cinemons_disponiveis()
@@ -125,25 +136,23 @@ class Jogo:
             CInemon("Paradoxium", "ESPECIAL", 15, 200, [("Paradoxo Lógico", 30), ("Indução Forte", 40)])
         ]
         self.gusto_cinemons = [
-            CInemon("discretex", "ESPECIAL", 15, 200, [("dano imoral", 30), ("chama", 40)])]
+            CInemon("Discretex", "ESPECIAL", 15, 200, [("Dano Imoral", 30), ("Chama", 40)])
+        ]
         self.em_batalha = False
         self.turno_jogador = True
         self.mensagem_atual = ""
-        self.fase_batalha = 0  # 0: turno jogador, 1: resultado jogador, 2: turno inimigo, 3: resultado inimigo
+        self.fase_batalha = 0
         self.acao_selecionada = None
         self.cinemon_jogador_atual = None
         self.cinemon_inimigo_atual = None
-        self.dano_calculado = 0
         self.rects_cinemon = []
         self.aguardando_espaco = False
-        self.fundo_mapa = pygame.Surface((LARGURA, ALTURA))
-        self.fundo_mapa.fill((100, 200, 100))  # Cor verde para o mapa
-        self.distancia_batalha = 100  # Distância para iniciar batalha
+        self.distancia_batalha = 100
         self.mensagem_dialogo = []
         self.dialogo_atual = 0
-        self.batalha_vencida = False  # Controla se o jogador já venceu a batalha
-        self.batalha_vencida_gusto = False
         self.batalha_vencida_pedro = False
+        self.batalha_vencida_gusto = False
+
     def criar_cinemons_disponiveis(self):
         return [
             CInemon("Heatbug", "FOGO", 10, 120, [("Bug Flamejante", 25), ("Firewall", 20)]),
@@ -159,13 +168,12 @@ class Jogo:
         ]
 
     def verificar_colisao(self):
-        # Calcula a distância entre o jogador e o Pedro
         distancia_pedro = math.sqrt((self.jogador.x - self.pedro.x)**2 + (self.jogador.y - self.pedro.y)**2)
         distancia_gusto = math.sqrt((self.jogador.x - self.gusto.x)**2 + (self.jogador.y - self.gusto.y)**2)
-        # Se a distância for menor que 100 pixels, não estiver já em batalha e não tiver vencido ainda
+        
         if (distancia_pedro < self.distancia_batalha and not self.em_batalha 
                 and len(self.jogador_cinemons) > 0 and not self.batalha_vencida_pedro):
-            self.inimigo_atual = 'Pedro' # define pedro como inimigo
+            self.inimigo_atual = 'Pedro'
             self.mensagem_dialogo = [
                 "Pedro Manhães: Você ousa se opor à minha revolução?",
                 "Pedro Manhães: Prepare-se para enfrentar as consequências!",
@@ -174,13 +182,14 @@ class Jogo:
             self.dialogo_atual = 0
             self.estado = "dialogo"
             self.aguardando_espaco = True
+        
         if (distancia_gusto < self.distancia_batalha and not self.em_batalha 
                 and len(self.jogador_cinemons) > 0 and not self.batalha_vencida_gusto):
-            self.inimigo_atual = 'Gusto' # define gusto como inimigo
+            self.inimigo_atual = 'Gusto'
             self.mensagem_dialogo = [
-                "gusto: Como você ousa falar mal de front end",
-                "gusto : Prepare-se para enfrentar as consequências!",
-                "gusto : Vamos resolver isso com uma batalha de CInemons!"
+                "Gusto: Como você ousa falar mal de front end",
+                "Gusto: Prepare-se para enfrentar as consequências!",
+                "Gusto: Vamos resolver isso com uma batalha de CInemons!"
             ]
             self.dialogo_atual = 0
             self.estado = "dialogo"
@@ -213,7 +222,7 @@ class Jogo:
                 pygame.quit()
                 sys.exit()
             if evento.type == pygame.MOUSEBUTTONDOWN:
-                if evento.button == 1:  # Botão esquerdo
+                if evento.button == 1:
                     for i, rect in enumerate(self.rects_cinemon):
                         if rect.collidepoint(evento.pos) and len(self.cinemons_escolhidos) < 3:
                             if i not in self.cinemons_escolhidos:
@@ -256,13 +265,11 @@ class Jogo:
         self.em_batalha = True
         self.turno_jogador = True
         self.fase_batalha = 0
+        self.cinemon_jogador_atual = self.jogador_cinemons[0]
         if self.inimigo_atual == 'Pedro':
             self.cinemon_inimigo_atual = self.pedro_cinemons[0]
         elif self.inimigo_atual == 'Gusto':
             self.cinemon_inimigo_atual = self.gusto_cinemons[0]
-        self.cinemon_jogador_atual = self.jogador_cinemons[0]
-        
-    
         self.mensagem_atual = f"{self.inimigo_atual} enviou {self.cinemon_inimigo_atual.nome}!"
         self.aguardando_espaco = True
 
@@ -287,26 +294,22 @@ class Jogo:
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE and self.aguardando_espaco:
                     self.aguardando_espaco = False
-                    
                     if self.cinemon_inimigo_atual.hp <= 0:
                         self.proximo_inimigo()
                     elif self.cinemon_jogador_atual.hp <= 0 and any(c.hp > 0 for c in self.jogador_cinemons):
                         self.estado = "trocar_cinemon"
-                    elif self.fase_batalha == 1:  # Depois do ataque do jogador
-                        self.fase_batalha = 2  # Vai para turno do inimigo
+                    elif self.fase_batalha == 1:
+                        self.fase_batalha = 2
                         self.turno_jogador = False
                         self.mensagem_atual = f"{self.cinemon_inimigo_atual.nome} está atacando..."
-                        pygame.time.delay(1000)  # Pequena pausa antes do inimigo atacar
+                        pygame.time.delay(1000)
                         self.executar_ataque_inimigo()
-                    elif self.fase_batalha == 3:  # Depois do ataque do inimigo
-                        self.fase_batalha = 0  # Volta para o turno do jogador
+                    elif self.fase_batalha == 3:
+                        self.fase_batalha = 0
                         self.turno_jogador = True
-                
-                # Seleção de ataques apenas durante o turno do jogador
                 if self.fase_batalha == 0 and self.turno_jogador and not self.aguardando_espaco:
                     if evento.key == pygame.K_1:
                         self.acao_selecionada = 0
@@ -319,31 +322,21 @@ class Jogo:
 
     def executar_ataque_jogador(self):
         if self.acao_selecionada is not None:
-            dano, mensagem = self.calcular_dano(
-                self.cinemon_jogador_atual,
-                self.cinemon_inimigo_atual,
-                self.acao_selecionada
-            )
+            dano, mensagem = self.calcular_dano(self.cinemon_jogador_atual, self.cinemon_inimigo_atual, self.acao_selecionada)
             self.cinemon_inimigo_atual.hp -= dano
             self.mensagem_atual = mensagem
             self.acao_selecionada = None
             self.aguardando_espaco = True
-            self.fase_batalha = 1  # Mostrando resultado do ataque
-            
+            self.fase_batalha = 1
             if self.cinemon_inimigo_atual.hp <= 0:
                 self.mensagem_atual += f"\n{self.cinemon_inimigo_atual.nome} desmaiou!"
 
     def executar_ataque_inimigo(self):
-        dano, mensagem = self.calcular_dano(
-            self.cinemon_inimigo_atual,
-            self.cinemon_jogador_atual,
-            random.randint(0, 1)
-        )
+        dano, mensagem = self.calcular_dano(self.cinemon_inimigo_atual, self.cinemon_jogador_atual, random.randint(0, 1))
         self.cinemon_jogador_atual.hp -= dano
         self.mensagem_atual = mensagem
         self.aguardando_espaco = True
-        self.fase_batalha = 3  # Mostrando resultado do ataque inimigo
-        
+        self.fase_batalha = 3
         if self.cinemon_jogador_atual.hp <= 0:
             self.mensagem_atual += f"\n{self.cinemon_jogador_atual.nome} desmaiou!"
             if any(c.hp > 0 for c in self.jogador_cinemons):
@@ -352,75 +345,56 @@ class Jogo:
                 self.mensagem_atual += "\nVocê perdeu a batalha!"
 
     def proximo_inimigo(self):
-        if self.inimigo_atual == 'Pedro':
-            inimigos = self.pedro_cinemons
-        elif self.inimigo_atual == 'Gusto':
-            inimigos = self.gusto_cinemons
-
-        
+        inimigos = self.pedro_cinemons if self.inimigo_atual == 'Pedro' else self.gusto_cinemons
         for cinemon in inimigos:
             if cinemon.hp > 0:
                 self.cinemon_inimigo_atual = cinemon
-                self.mensagem_atual = f"Pedro enviou {cinemon.nome}!"
+                self.mensagem_atual = f"{self.inimigo_atual} enviou {cinemon.nome}!"
                 self.fase_batalha = 0
                 self.turno_jogador = True
                 self.aguardando_espaco = True
                 return
-        
         self.em_batalha = False
         self.estado = "mapa"
         if self.inimigo_atual == 'Pedro':
-            self.batalha_vencida_pedro = True  # Marca que o jogador venceu pedro
-            
-        if self.inimigo_atual == 'Gusto':
-            self.batalha_vencida_gusto = True  # Marca que o jogador venceu gusto
+            self.batalha_vencida_pedro = True
+        elif self.inimigo_atual == 'Gusto':
+            self.batalha_vencida_gusto = True
         self.mensagem_atual = "Você venceu a batalha!"
         self.aguardando_espaco = True
 
     def renderizar_batalha(self):
         tela.fill((200, 230, 255))
+        pygame.draw.rect(tela, AZUL, (50, 50, 400, 200))
+        pygame.draw.rect(tela, VERMELHO, (LARGURA - 450, 50, 400, 200))
         
-        # Renderizar CInemons
-        pygame.draw.rect(tela, AZUL, (50, 50, 400, 200))  # Jogador
-        pygame.draw.rect(tela, VERMELHO, (LARGURA - 450, 50, 400, 200))  # Inimigo
-        
-        # Info do CInemon do jogador
         jogador = self.cinemon_jogador_atual
         nome_jogador = fonte_grande.render(jogador.nome, True, BRANCO)
         hp_jogador = fonte.render(f"HP: {jogador.hp}/{jogador.hp_max}", True, BRANCO)
         tela.blit(nome_jogador, (70, 70))
         tela.blit(hp_jogador, (70, 110))
         
-        # Info do CInemon inimigo
         inimigo = self.cinemon_inimigo_atual
         nome_inimigo = fonte_grande.render(inimigo.nome, True, BRANCO)
         hp_inimigo = fonte.render(f"HP: {inimigo.hp}/{inimigo.hp_max}", True, BRANCO)
         tela.blit(nome_inimigo, (LARGURA - 430, 70))
         tela.blit(hp_inimigo, (LARGURA - 430, 110))
         
-        # Caixa de mensagem
         pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
         pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
         
-        # Renderizar mensagem atual
         linhas = self.mensagem_atual.split('\n')
         for i, linha in enumerate(linhas):
             texto = fonte.render(linha, True, PRETO)
             tela.blit(texto, (70, ALTURA - 180 + i * 30))
         
-        # Opções durante o turno do jogador
         if self.fase_batalha == 0 and self.turno_jogador and not self.aguardando_espaco:
             opcoes = fonte.render(f"1. {jogador.ataques[0][0]}  2. {jogador.ataques[1][0]}  3. Trocar", True, PRETO)
             tela.blit(opcoes, (LARGURA//2 - opcoes.get_width()//2, ALTURA - 50))
         
-        # Instrução para continuar
         if self.aguardando_espaco:
             instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
             tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
-        
-        # Se for turno do inimigo e não estiver esperando espaço, executa o ataque
-        elif self.fase_batalha == 2 and not self.aguardando_espaco:
-            self.executar_ataque_inimigo()
 
     def tela_trocar_cinemon(self):
         for evento in pygame.event.get():
@@ -433,15 +407,15 @@ class Jogo:
                     self.cinemon_jogador_atual = self.jogador_cinemons[0]
                     self.mensagem_atual = f"Você trocou {antigo} por {self.cinemon_jogador_atual.nome}!"
                     self.estado = "batalha"
-                    self.fase_batalha = 0  # Volta para o turno do jogador (pode atacar)
+                    self.fase_batalha = 0
                     self.turno_jogador = True
-                    self.aguardando_espaco = False  # Não precisa pressionar espaço, pode atacar direto
+                    self.aguardando_espaco = False
                 elif evento.key == pygame.K_2 and len(self.jogador_cinemons) >= 2 and self.jogador_cinemons[1].hp > 0:
                     antigo = self.cinemon_jogador_atual.nome
                     self.cinemon_jogador_atual = self.jogador_cinemons[1]
                     self.mensagem_atual = f"Você trocou {antigo} por {self.cinemon_jogador_atual.nome}!"
                     self.estado = "batalha"
-                    self.fase_batalha = 0  # Volta para o turno do jogador
+                    self.fase_batalha = 0
                     self.turno_jogador = True
                     self.aguardando_espaco = False
                 elif evento.key == pygame.K_3 and len(self.jogador_cinemons) >= 3 and self.jogador_cinemons[2].hp > 0:
@@ -449,7 +423,7 @@ class Jogo:
                     self.cinemon_jogador_atual = self.jogador_cinemons[2]
                     self.mensagem_atual = f"Você trocou {antigo} por {self.cinemon_jogador_atual.nome}!"
                     self.estado = "batalha"
-                    self.fase_batalha = 0  # Volta para o turno do jogador
+                    self.fase_batalha = 0
                     self.turno_jogador = True
                     self.aguardando_espaco = False
                 elif evento.key == pygame.K_ESCAPE:
@@ -476,21 +450,16 @@ class Jogo:
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
 
     def renderizar_dialogo(self):
-        tela.fill(AZUL_ESCURO)  # Fundo azul escuro para diálogos
-        
-        # Caixa de diálogo
+        tela.fill(AZUL_ESCURO)
         pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
         pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
         
-        # Texto do diálogo
         texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual], True, PRETO)
         tela.blit(texto, (70, ALTURA - 180))
         
-        # Instrução
         instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
         
-        # Processar eventos
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
@@ -501,6 +470,13 @@ class Jogo:
                     self.estado = "batalha"
                     self.iniciar_batalha()
 
+    def _atualizar_camera(self):
+        x = self.jogador.x - LARGURA // 2
+        y = self.jogador.y - ALTURA // 2
+        x = max(0, min(x, self.map_width - LARGURA))
+        y = max(0, min(y, self.map_height - ALTURA))
+        self.camera = pygame.Rect(x, y, LARGURA, ALTURA)
+
     def mapa(self):
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -510,7 +486,6 @@ class Jogo:
                 if evento.key == pygame.K_ESCAPE:
                     self.estado = "menu"
         
-        # Movimentação do jogador
         keys = pygame.key.get_pressed()
         dx, dy = 0, 0
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -523,32 +498,36 @@ class Jogo:
             dy = 1
             
         self.jogador.mover(dx, dy)
-        self.verificar_colisao()  # Verifica colisão a cada frame
+        self.verificar_colisao()
+        self._atualizar_camera()
         
-        # Desenhar o mapa
-        tela.blit(self.fundo_mapa, (0, 0))
+        tela.fill((50, 50, 50))
+        for layer in self.tmx_data.layers:
+            if hasattr(layer, 'tiles'):
+                for x, y, surf in layer.tiles():
+                    tela.blit(surf, 
+                            (x * self.tmx_data.tilewidth - self.camera.x, 
+                             y * self.tmx_data.tileheight - self.camera.y))
         
-        # Desenhar personagens
-        self.pedro.desenhar(tela)
-        self.jogador.desenhar(tela)
-        self.gusto.desenhar(tela)
-        # Instruções
-        instrucao = fonte.render("Use WASD ou setas para mover. ESC para voltar ao menu", True, PRETO)
+        self.pedro.desenhar(tela, self.camera)
+        self.gusto.desenhar(tela, self.camera)
+        self.jogador.desenhar(tela, self.camera)
+        
+        instrucao = fonte.render("Use WASD ou setas para mover. ESC para voltar ao menu", True, BRANCO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 30))
         
-        # Mostrar CInemon atual
         if self.cinemon_jogador_atual:
-            cinemon_info = fonte.render(f"CInemon atual: {self.cinemon_jogador_atual.nome} (HP: {self.cinemon_jogador_atual.hp}/{self.cinemon_jogador_atual.hp_max})", True, PRETO)
+            cinemon_info = fonte.render(
+                f"CInemon atual: {self.cinemon_jogador_atual.nome} (HP: {self.cinemon_jogador_atual.hp}/{self.cinemon_jogador_atual.hp_max})", 
+                True, BRANCO)
             tela.blit(cinemon_info, (10, 10))
         
-        # Mostrar mensagem se já tiver vencido
         if self.batalha_vencida_pedro:
             mensagem = fonte.render("Você já derrotou Pedro Manhães!", True, VERMELHO)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 50))
         if self.batalha_vencida_gusto:
-            mensagem = fonte.render("Você já derrotou gusto!", True, VERMELHO)
-            tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 50))
-
+            mensagem = fonte.render("Você já derrotou Gusto!", True, VERMELHO)
+            tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 70))
 
     def rodar(self):
         while True:
