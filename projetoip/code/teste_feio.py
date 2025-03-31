@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import math
+import os
 from pytmx.util_pygame import load_pygame
 
 # Inicialização
@@ -97,11 +98,13 @@ class Inimigo:
         self.rect = pygame.Rect(x, y, 40, 60)
         if nome == 'Pedro':
             self.cor = VERMELHO
-            self.imagem = pygame.image.load(r"C:\Users\gmome\Desktop\CInemon-IP\projetoip\graphics\Fotos\pedro.manhas.jpeg")
+            caminho_imagem = os.path.join("projetoip" ,"graphics", "Fotos", "pedro.manhas.jpeg")
+            self.imagem = pygame.image.load(caminho_imagem)
             self.imagem = pygame.transform.scale(self.imagem, (40, 60))
         elif nome == 'pooh':
             self.cor = VERDE
-            self.imagem = pygame.image.load(r"C:\Users\gmome\Desktop\CInemon-IP\projetoip\graphics\Fotos\pooh.png")
+            caminho_imagem = os.path.join("projetoip" ,"graphics", "Fotos", "pooh.png")
+            self.imagem = pygame.image.load(caminho_imagem)
             self.imagem = pygame.transform.scale(self.imagem, (40, 60))
         elif nome == 'Gusto':
             self.cor = LARANJA
@@ -148,7 +151,8 @@ class Jogo:
     def __init__(self):
         self.estado = "menu"
         # Carrega o mapa TMX
-        self.tmx_data = load_pygame(r'C:\Users\gmome\Desktop\CInemon-IP\projetoip\data\basic.tmx')  # Ajuste o caminho
+        caminho_mapa = os.path.join("projetoip" ,"data", "basic.tmx")
+        self.tmx_data = load_pygame(caminho_mapa)  # Ajuste o caminho
         self.map_width = self.tmx_data.width * self.tmx_data.tilewidth
         self.map_height = self.tmx_data.height * self.tmx_data.tileheight
         
@@ -325,28 +329,7 @@ class Jogo:
         if 0 <= tile_x < self.tmx_data.width and 0 <= tile_y < self.tmx_data.height:
             
             self.jogador.x, self.jogador.y = self.jogador.x_anterior, self.jogador.y_anterior
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            
     def iniciar_batalha(self):
         self.em_batalha = True
         self.turno_jogador = True
