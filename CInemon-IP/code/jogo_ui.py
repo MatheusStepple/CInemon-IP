@@ -1,11 +1,15 @@
-# jogo_ui.py
 import pygame
 import sys
 from jogo_base import JogoBase
+from batalha_ui import BatalhaUI
 from config import (tela, fonte, fonte_grande, relogio, BRANCO, PRETO, VERMELHO, AZUL, VERDE, AMARELO, 
                     CINZA, ROXO, AZUL_ESCURO, LARGURA, ALTURA)
 
 class JogoUI(JogoBase):
+    def __init__(self):
+        super().__init__()
+        self.batalha_ui = BatalhaUI()  # Instância de BatalhaUI para gerenciar batalhas
+
     def menu_principal(self):
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -69,92 +73,6 @@ class JogoUI(JogoBase):
             tela.blit(status, (x + 75 - status.get_width()//2, y + 80))
 
         instrucao = fonte.render(f"Selecionados: {len(self.cinemons_escolhidos)}/3 - ENTER para confirmar", True, PRETO)
-        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
-
-    def renderizar_batalha(self):
-        tela.fill((200, 230, 255))
-        pygame.draw.rect(tela, AZUL, (50, 50, 400, 200))
-        pygame.draw.rect(tela, VERMELHO, (LARGURA - 450, 50, 400, 200))
-        
-        jogador = self.cinemon_jogador_atual
-        nome_jogador = fonte_grande.render(jogador.nome, True, BRANCO)
-        hp_jogador = fonte.render(f"HP: {jogador.hp}/{jogador.hp_max}", True, BRANCO)
-        tela.blit(nome_jogador, (70, 70))
-        tela.blit(hp_jogador, (70, 110))
-        
-        inimigo = self.cinemon_inimigo_atual
-        nome_inimigo = fonte_grande.render(inimigo.nome, True, BRANCO)
-        hp_inimigo = fonte.render(f"HP: {inimigo.hp}/{inimigo.hp_max}", True, BRANCO)
-        tela.blit(nome_inimigo, (LARGURA - 430, 70))
-        tela.blit(hp_inimigo, (LARGURA - 430, 110))
-        
-        pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
-        pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
-        
-        linhas = self.mensagem_atual.split('\n')
-        for i, linha in enumerate(linhas):
-            texto = fonte.render(linha, True, PRETO)
-            tela.blit(texto, (70, ALTURA - 180 + i * 30))
-        
-        if self.fase_batalha == 0 and self.turno_jogador and not self.aguardando_espaco:
-            opcoes = fonte.render(f"1. {jogador.ataques[0][0]}  2. {jogador.ataques[1][0]}  3. Trocar", True, PRETO)
-            tela.blit(opcoes, (LARGURA//2 - opcoes.get_width()//2, ALTURA - 50))
-        
-        if self.aguardando_espaco:
-            instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
-            tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
-
-    def tela_trocar_cinemon(self):
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_1 and len(self.jogador_cinemons) >= 1 and self.jogador_cinemons[0].hp > 0:
-                    antigo = self.cinemon_jogador_atual.nome
-                    self.cinemon_jogador_atual = self.jogador_cinemons[0]
-                    self.mensagem_atual = f"Você trocou {antigo} por {self.cinemon_jogador_atual.nome}!"
-                    self.estado = "batalha"
-                    self.fase_batalha = 0
-                    self.turno_jogador = True
-                    self.aguardando_espaco = False
-                elif evento.key == pygame.K_2 and len(self.jogador_cinemons) >= 2 and self.jogador_cinemons[1].hp > 0:
-                    antigo = self.cinemon_jogador_atual.nome
-                    self.cinemon_jogador_atual = self.jogador_cinemons[1]
-                    self.mensagem_atual = f"Você trocou {antigo} por {self.cinemon_jogador_atual.nome}!"
-                    self.estado = "batalha"
-                    self.fase_batalha = 0
-                    self.turno_jogador = True
-                    self.aguardando_espaco = False
-                elif evento.key == pygame.K_3 and len(self.jogador_cinemons) >= 3 and self.jogador_cinemons[2].hp > 0:
-                    antigo = self.cinemon_jogador_atual.nome
-                    self.cinemon_jogador_atual = self.jogador_cinemons[2]
-                    self.mensagem_atual = f"Você trocou {antigo} por {self.cinemon_jogador_atual.nome}!"
-                    self.estado = "batalha"
-                    self.fase_batalha = 0
-                    self.turno_jogador = True
-                    self.aguardando_espaco = False
-                elif evento.key == pygame.K_ESCAPE:
-                    self.estado = "batalha"
-
-        tela.fill((200, 200, 255))
-        titulo = fonte_grande.render("Escolha um CInemon", True, PRETO)
-        tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 50))
-
-        for i, cinemon in enumerate(self.jogador_cinemons):
-            y = 150 + i * 120
-            pygame.draw.rect(tela, BRANCO if cinemon.hp > 0 else CINZA, (LARGURA//2 - 150, y, 300, 100))
-            pygame.draw.rect(tela, PRETO, (LARGURA//2 - 150, y, 300, 100), 2)
-            
-            nome = fonte.render(f"{i+1}. {cinemon.nome} ({cinemon.tipo})", True, PRETO)
-            hp = fonte.render(f"HP: {cinemon.hp}/{cinemon.hp_max}", True, PRETO)
-            status = fonte.render("ATIVO" if cinemon.hp > 0 else "DESMAIADO", True, VERMELHO if cinemon.hp <= 0 else VERDE)
-            
-            tela.blit(nome, (LARGURA//2 - nome.get_width()//2, y + 20))
-            tela.blit(hp, (LARGURA//2 - hp.get_width()//2, y + 50))
-            tela.blit(status, (LARGURA//2 - status.get_width()//2, y + 80))
-
-        instrucao = fonte.render("Pressione 1-3 para escolher ou ESC para cancelar", True, PRETO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
 
     def renderizar_dialogo(self):
@@ -273,10 +191,10 @@ class JogoUI(JogoBase):
             elif self.estado == "mapa":
                 self.mapa()
             elif self.estado == "batalha":
-                self.processar_batalha()
-                self.renderizar_batalha()
+                self.batalha_ui.processar_batalha(self)
+                self.batalha_ui.renderizar_batalha(self)
             elif self.estado == "trocar_cinemon":
-                self.tela_trocar_cinemon()
+                self.batalha_ui.tela_trocar_cinemon(self)
             elif self.estado == "dialogo":
                 self.renderizar_dialogo()
 

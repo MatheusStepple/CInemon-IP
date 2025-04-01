@@ -1,4 +1,3 @@
-# main.py
 import sys
 from jogo_ui import JogoUI
 from config import (tela, fonte, fonte_grande, relogio, BRANCO, PRETO, VERMELHO, AZUL, VERDE, AMARELO, 
