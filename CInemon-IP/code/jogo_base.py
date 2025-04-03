@@ -12,9 +12,14 @@ from pytmx.util_pygame import load_pygame
 class JogoBase:
     def __init__(self):
         self.estado = "menu"
-        # Carrega o mapa TMX
+        # Carrega o mapa TMX com tratamento de erro
         caminho_mapa = os.path.join("Desktop", "CInemon-IP", "data", "basic.tmx")
-        self.tmx_data = load_pygame(caminho_mapa)
+        try:
+            self.tmx_data = load_pygame(caminho_mapa)
+            print("Mapa carregado com sucesso:", self.tmx_data.width, "x", self.tmx_data.height)
+        except Exception as e:
+            print(f"Erro ao carregar o mapa: {e}")
+            sys.exit()
         self.map_width = self.tmx_data.width * self.tmx_data.tilewidth
         self.map_height = self.tmx_data.height * self.tmx_data.tileheight
         
@@ -66,17 +71,29 @@ class JogoBase:
         return mapa_colisao
 
     def verificar_colisao_tile(self, x, y):
+        """Verifica colisão em uma posição específica do mundo"""
         tile_x = int(x // self.tmx_data.tilewidth)
         tile_y = int(y // self.tmx_data.tileheight)
+        
         if 0 <= tile_x < self.tmx_data.width and 0 <= tile_y < self.tmx_data.height:
             return self.mapa_colisao[tile_x][tile_y]
-        return True
+        return True  # Considera fora do mapa como colisão
 
     def verificar_colisao_personagem(self, rect):
-        pontos = [
-            (rect.left, rect.top), (rect.right, rect.top),
-            (rect.left, rect.bottom), (rect.right, rect.bottom)
-        ]
+        """Verifica colisão para um retângulo do personagem"""
+        # Verifica os pontos ao redor do hitbox, não apenas os cantos
+        pontos = []
+        step = 4  # Verifica a cada 4 pixels para melhor precisão
+        
+        # Pontos ao longo das bordas
+        for x in range(rect.left, rect.right, step):
+            pontos.append((x, rect.top))
+            pontos.append((x, rect.bottom))
+        
+        for y in range(rect.top, rect.bottom, step):
+            pontos.append((rect.left, y))
+            pontos.append((rect.right, y))
+        
         for px, py in pontos:
             if self.verificar_colisao_tile(px, py):
                 return True
@@ -138,12 +155,21 @@ class JogoBase:
             self.aguardando_espaco = True
 
     def verificar_colisao_barreiras(self):
-        temp_rect = pygame.Rect(self.jogador.x, self.jogador.y, 40, 60)
-        if self.verificar_colisao_personagem(temp_rect):
-            self.jogador.x = self.jogador.x_anterior
-            self.jogador.y = self.jogador.y_anterior
-            self.jogador.rect = pygame.Rect(self.jogador.x, self.jogador.y, 40, 60)
-            return True
+        # Primeiro guarda a posição atual
+        temp_x, temp_y = self.jogador.x, self.jogador.y
+        
+        # Verifica colisão apenas se o personagem está se movendo
+        if (self.jogador.x != self.jogador.x_anterior or 
+            self.jogador.y != self.jogador.y_anterior):
+            
+            if self.verificar_colisao_personagem(self.jogador.rect):
+                # Colisão detectada - volta para posição anterior
+                self.jogador.x = self.jogador.x_anterior
+                self.jogador.y = self.jogador.y_anterior
+                self.jogador.rect.x = self.jogador.x + 8
+                self.jogador.rect.y = self.jogador.y + 18
+                return True
+    
         return False
 
     def iniciar_batalha(self):
