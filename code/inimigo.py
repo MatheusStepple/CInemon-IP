@@ -20,15 +20,19 @@ class Inimigo:
             
         elif nome == 'pooh':
             self.cor = VERDE
-            caminho_imagem = os.path.join("Desktop", "CInemon-IP", "graphics", "Fotos", "pooh.png")
+            caminho_imagem = os.path.join("Desktop", "CInemon-IP", "sprites", "spr_ricardo.png")
             
             self.imagem = pygame.image.load(caminho_imagem)
-            self.imagem = pygame.transform.scale(self.imagem, (20, 30))
+            self.imagem = pygame.transform.scale(self.imagem, (31, 31))
             self.tem_imagem = True
             
         elif nome == 'Gusto':
             self.cor = LARANJA
-            self.tem_imagem = False
+            caminho_imagem = os.path.join("Desktop", "CInemon-IP", "sprites", "spr_fernanda_madeiral.png")
+            
+            self.imagem = pygame.image.load(caminho_imagem)
+            self.imagem = pygame.transform.scale(self.imagem, (20, 30))
+            self.tem_imagem = True
         else:
             self.cor = CINZA
             self.tem_imagem = False

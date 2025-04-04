@@ -8,11 +8,12 @@ from inimigo import Inimigo
 from cinemon import CInemon
 from config import LARGURA, ALTURA, SISTEMA_DE_TIPOS
 from pytmx.util_pygame import load_pygame
+from gema import Gema
+from npc import NPC  # Importa a nova classe NPC
 
 class JogoBase:
     def __init__(self):
         self.estado = "menu"
-        # Carrega o mapa TMX com tratamento de erro
         caminho_mapa = os.path.join("Desktop", "CInemon-IP", "data", "basic.tmx")
         try:
             self.tmx_data = load_pygame(caminho_mapa)
@@ -23,10 +24,15 @@ class JogoBase:
         self.map_width = self.tmx_data.width * self.tmx_data.tilewidth
         self.map_height = self.tmx_data.height * self.tmx_data.tileheight
         
-        self.jogador = Personagem(self.map_width//2, self.map_height//2, self.map_width, self.map_height)
-        self.pedro = Inimigo(self.map_width - 200, 350, 'Pedro')
-        self.gusto = Inimigo(700, 500, 'Gusto')
-        self.pooh = Inimigo(900, 500, 'pooh')
+        self.jogador = None
+        self.pedro = None
+        self.gusto = None
+        self.pooh = None
+        self.fernanda = None  # Novo NPC
+        self.gemas = []
+        
+        self.definir_posicoes()
+        
         self.camera = pygame.Rect(0, 0, LARGURA, ALTURA)
         
         self.inimigo_atual = None
@@ -60,6 +66,23 @@ class JogoBase:
         
         self.camada_colisao = self.tmx_data.get_layer_by_name("colisao")
         self.mapa_colisao = self._criar_mapa_colisao()
+        
+        self.gemas_coletadas = 0
+        self.em_dialogo_npc = False  # Controla o diálogo com o NPC
+        self.resposta_npc = None  # Armazena a resposta do jogador ('sim' ou 'nao')
+
+    def definir_posicoes(self):
+        self.jogador = Personagem(100, 100, self.map_width, self.map_height)
+        self.pedro = Inimigo(800, 350, 'Pedro')
+        self.gusto = Inimigo(300, 500, 'Gusto')
+        self.pooh = Inimigo(600, 600, 'pooh')
+        self.fernanda = NPC(400, 200, 'Fernanda')  # Posição do NPC Fernanda
+        self.gemas = [
+            Gema(150, 150),
+            Gema(250, 400),
+            Gema(450, 300),
+            Gema(700, 500),
+        ]
 
     def _criar_mapa_colisao(self):
         mapa_colisao = [[False for _ in range(self.tmx_data.height)] 
@@ -71,21 +94,17 @@ class JogoBase:
         return mapa_colisao
 
     def verificar_colisao_tile(self, x, y):
-        """Verifica colisão em uma posição específica do mundo"""
         tile_x = int(x // self.tmx_data.tilewidth)
         tile_y = int(y // self.tmx_data.tileheight)
         
         if 0 <= tile_x < self.tmx_data.width and 0 <= tile_y < self.tmx_data.height:
             return self.mapa_colisao[tile_x][tile_y]
-        return True  # Considera fora do mapa como colisão
+        return True
 
     def verificar_colisao_personagem(self, rect):
-        """Verifica colisão para um retângulo do personagem"""
-        # Verifica os pontos ao redor do hitbox, não apenas os cantos
         pontos = []
-        step = 4  # Verifica a cada 4 pixels para melhor precisão
+        step = 4
         
-        # Pontos ao longo das bordas
         for x in range(rect.left, rect.right, step):
             pontos.append((x, rect.top))
             pontos.append((x, rect.bottom))
@@ -155,15 +174,12 @@ class JogoBase:
             self.aguardando_espaco = True
 
     def verificar_colisao_barreiras(self):
-        # Primeiro guarda a posição atual
         temp_x, temp_y = self.jogador.x, self.jogador.y
         
-        # Verifica colisão apenas se o personagem está se movendo
         if (self.jogador.x != self.jogador.x_anterior or 
             self.jogador.y != self.jogador.y_anterior):
             
             if self.verificar_colisao_personagem(self.jogador.rect):
-                # Colisão detectada - volta para posição anterior
                 self.jogador.x = self.jogador.x_anterior
                 self.jogador.y = self.jogador.y_anterior
                 self.jogador.rect.x = self.jogador.x + 8
@@ -171,6 +187,46 @@ class JogoBase:
                 return True
     
         return False
+
+    def verificar_coleta_gemas(self):
+        for gema in self.gemas:
+            if not gema.collected and self.jogador.rect.colliderect(gema.rect):
+                gema.collected = True
+                self.gemas_coletadas += 1
+                print(f"Gema coletada! Total: {self.gemas_coletadas}")
+
+    def verificar_interacao_npc(self):
+        distancia_fernanda = math.sqrt((self.jogador.x - self.fernanda.x)**2 + (self.jogador.y - self.fernanda.y)**2)
+        if distancia_fernanda < 50:  # Distância para interação
+            return True
+        return False
+
+    def processar_dialogo_npc(self):
+        if self.jogador.dinheiro >= 50:
+            self.mensagem_dialogo = [
+                "Fernanda: Quer gastar 50 créditos para reanimar e curar seus CInemons?",
+                "Pressione S para Sim ou N para Não"
+            ]
+        else:
+            self.mensagem_dialogo = [
+                "Fernanda: Você não tem créditos suficientes!",
+                "Volte quando tiver pelo menos 50 créditos."
+            ]
+        self.em_dialogo_npc = True
+        self.dialogo_atual = 0
+        self.resposta_npc = None
+
+    def responder_dialogo_npc(self, resposta):
+        if resposta == 'sim' and self.jogador.dinheiro >= 50:
+            self.jogador.dinheiro -= 50
+            for cinemon in self.jogador_cinemons:
+                cinemon.hp = cinemon.hp_max  # Cura total
+            self.mensagem_dialogo = ["Fernanda: Seus CInemons estão como novos!"]
+            self.dialogo_atual = 0
+        elif resposta == 'nao':
+            self.mensagem_dialogo = ["Fernanda: Tudo bem, volte quando precisar!"]
+            self.dialogo_atual = 0
+        self.resposta_npc = None
 
     def iniciar_batalha(self):
         self.em_batalha = True
