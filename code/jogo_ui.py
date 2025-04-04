@@ -3,8 +3,8 @@ import sys
 import os
 import math
 import random
-from jogo_base import JogoBase  # Importa JogoBase para herança
-from batalha_ui import BatalhaUI  # Importa BatalhaUI para batalhas
+from jogo_base import JogoBase
+from batalha_ui import BatalhaUI
 from personagem import Personagem
 from inimigo import Inimigo
 from cinemon import CInemon
@@ -14,9 +14,12 @@ from pytmx.util_pygame import load_pygame
 
 class JogoUI(JogoBase):
     def __init__(self):
-        super().__init__()  # Inicializa a classe base JogoBase
-        self.batalha_ui = BatalhaUI()  # Instância de BatalhaUI para gerenciar batalhas
-        self.zoom = 1.9  # Adicionado para funcionalidade de zoom
+        super().__init__()
+        self.batalha_ui = BatalhaUI()
+        self.zoom = 1.9
+        self.mostrar_status = False
+        self.mostrar_mensagem_gemas = False
+        self.tempo_mensagem_gemas = 0
 
     def _atualizar_camera(self):
         x = self.jogador.x - (LARGURA // 2) / self.zoom
@@ -27,7 +30,7 @@ class JogoUI(JogoBase):
 
     def ajustar_zoom(self, incremento):
         self.zoom += incremento
-        self.zoom = max(0.5, min(self.zoom, 3.0))  # Limite de zoom entre 0.5x e 3.0x
+        self.zoom = max(0.5, min(self.zoom, 3.0))
         self._atualizar_camera()
 
     def menu_principal(self):
@@ -117,6 +120,80 @@ class JogoUI(JogoBase):
                     self.estado = "batalha"
                     self.iniciar_batalha()
 
+    def renderizar_dialogo_npc(self):
+        tela.fill(AZUL_ESCURO)
+        pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
+        pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
+        
+        texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual], True, PRETO)
+        tela.blit(texto, (70, ALTURA - 180))
+        
+        if self.dialogo_atual == 1 and self.jogador.dinheiro >= 50:
+            instrucao = fonte.render("S para Sim | N para Não", True, PRETO)
+        else:
+            instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
+        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_SPACE:
+                    if self.dialogo_atual < len(self.mensagem_dialogo) - 1:
+                        self.dialogo_atual += 1
+                    else:
+                        self.em_dialogo_npc = False
+                        self.estado = "mapa"
+                elif self.dialogo_atual == 1 and self.jogador.dinheiro >= 50:
+                    if evento.key == pygame.K_s:
+                        self.responder_dialogo_npc('sim')
+                    elif evento.key == pygame.K_n:
+                        self.responder_dialogo_npc('nao')
+
+    def mostrar_status_cinemons(self):
+        tela.fill(AZUL_ESCURO)
+        pygame.draw.rect(tela, BRANCO, (50, 50, LARGURA - 100, ALTURA - 100))
+        pygame.draw.rect(tela, PRETO, (50, 50, LARGURA - 100, ALTURA - 100), 2)
+
+        titulo = fonte_grande.render("Seus CInemons", True, PRETO)
+        tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 70))
+
+        for i, cinemon in enumerate(self.jogador_cinemons):
+            y_pos = 150 + i * 100
+            nome = fonte.render(f"Nome: {cinemon.nome}", True, PRETO)
+            hp = fonte.render(f"HP: {cinemon.hp}/{cinemon.hp_max}", True, PRETO if cinemon.hp > 0 else VERMELHO)
+            status = fonte.render("Vivo" if cinemon.hp > 0 else "Morto", True, VERDE if cinemon.hp > 0 else VERMELHO)
+            
+            tela.blit(nome, (100, y_pos))
+            tela.blit(hp, (100, y_pos + 30))
+            tela.blit(status, (100, y_pos + 60))
+
+        instrucao = fonte.render("Pressione ESC para voltar ao mapa", True, PRETO)
+        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 70))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    self.mostrar_status = False
+
+    def verificar_coleta_gemas(self):
+        for gema in self.gemas:
+            if not gema.collected and self.jogador.rect.colliderect(gema.rect):
+                gema.collected = True
+                self.gemas_coletadas += 1
+                print(f"Gema coletada! Total: {self.gemas_coletadas}")
+                
+                if self.gemas_coletadas == 4:
+                    for cinemon in self.jogador_cinemons:
+                        cinemon.hp_max += 20
+                        cinemon.hp = cinemon.hp_max
+                    self.mostrar_mensagem_gemas = True
+                    self.tempo_mensagem_gemas = 180
+
     def mapa(self):
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -124,16 +201,23 @@ class JogoUI(JogoBase):
                 sys.exit()
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
-                    self.estado = "menu"
-                elif evento.key == pygame.K_z:  # Aumentar zoom
+                    self.mostrar_status = not self.mostrar_status
+                elif evento.key == pygame.K_z:
                     print(f"Zoom antes: {self.zoom}")
                     self.ajustar_zoom(0.1)
                     print(f"Zoom depois: {self.zoom}")
-                elif evento.key == pygame.K_x:  # Diminuir zoom
+                elif evento.key == pygame.K_x:
                     print(f"Zoom antes: {self.zoom}")
                     self.ajustar_zoom(-0.1)
                     print(f"Zoom depois: {self.zoom}")
+                elif evento.key == pygame.K_SPACE and self.verificar_interacao_npc():
+                    self.estado = "dialogo_npc"
+                    self.processar_dialogo_npc()
         
+        if self.mostrar_status:
+            self.mostrar_status_cinemons()
+            return
+
         keys = pygame.key.get_pressed()
         dx, dy = 0, 0
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -148,6 +232,7 @@ class JogoUI(JogoBase):
         self.jogador.mover(dx, dy)
         self.verificar_colisao_barreiras()
         self.verificar_colisao()
+        self.verificar_coleta_gemas()
         self._atualizar_camera()
 
         tela.fill((0, 0, 0))
@@ -169,8 +254,12 @@ class JogoUI(JogoBase):
         self.pedro.desenhar(tela, self.camera, self.zoom)
         self.gusto.desenhar(tela, self.camera, self.zoom)
         self.pooh.desenhar(tela, self.camera, self.zoom)
+        self.fernanda.desenhar(tela, self.camera, self.zoom)  # Desenha o NPC
         
-        instrucao = fonte.render("WASD/Setas: Mover | ESC: Menu", True, BRANCO)
+        for gema in self.gemas:
+            gema.desenhar(tela, self.camera, self.zoom)
+
+        instrucao = fonte.render("WASD/Setas: Mover | ESC: Status | ESPAÇO: Falar com NPC", True, BRANCO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 30))
         
         if self.cinemon_jogador_atual:
@@ -193,6 +282,18 @@ class JogoUI(JogoBase):
             
         texto_dinheiro = fonte.render(f'Você tem {self.jogador.dinheiro} créditos', True, AMARELO)
         tela.blit(texto_dinheiro, (10, 40))
+        
+        texto_gemas = fonte.render(f"Gemas: {self.gemas_coletadas}", True, AMARELO)
+        tela.blit(texto_gemas, (10, 70))
+
+        if self.gemas_coletadas >= 4 and self.mostrar_mensagem_gemas:
+            mensagem = fonte_grande.render("Parabéns! Você pegou as 4 gemas!", True, VERDE)
+            mensagem2 = fonte.render("Seus CInemons ganharam 20 de HP máximo!", True, VERDE)
+            tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, ALTURA//2 - 50))
+            tela.blit(mensagem2, (LARGURA//2 - mensagem2.get_width()//2, ALTURA//2 + 10))
+            self.tempo_mensagem_gemas -= 1
+            if self.tempo_mensagem_gemas <= 0:
+                self.mostrar_mensagem_gemas = False
 
     def rodar(self):
         while True:
@@ -203,12 +304,14 @@ class JogoUI(JogoBase):
             elif self.estado == "mapa":
                 self.mapa()
             elif self.estado == "batalha":
-                self.batalha_ui.processar_batalha(self)  # Usa BatalhaUI para processar
-                self.batalha_ui.renderizar_batalha(self)  # Usa BatalhaUI para renderizar
+                self.batalha_ui.processar_batalha(self)
+                self.batalha_ui.renderizar_batalha(self)
             elif self.estado == "trocar_cinemon":
-                self.batalha_ui.tela_trocar_cinemon(self)  # Usa BatalhaUI para troca
+                self.batalha_ui.tela_trocar_cinemon(self)
             elif self.estado == "dialogo":
                 self.renderizar_dialogo()
+            elif self.estado == "dialogo_npc":
+                self.renderizar_dialogo_npc()
 
             pygame.display.flip()
             relogio.tick(60)

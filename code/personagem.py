@@ -20,7 +20,7 @@ class Personagem:
 
         # Carrega o sprite do personagem com caminho absoluto
         try:
-            sprite_path = r"C:\Users\PC\Desktop\CInemon-IP\sprites\sprite_principal.png"
+            sprite_path = os.path.join("Desktop", "CInemon-IP", "sprites", "sprite_principal.png")
             self.sprite = pygame.image.load(sprite_path).convert_alpha()
             # Mantém o tamanho original do sprite
             self.sprite = pygame.transform.scale(self.sprite, (40, 60))  # Tamanho visual: 40x60
@@ -58,37 +58,28 @@ class Personagem:
         self.rect.y = self.y + 26  # Centralizado verticalmente (60 - 8 = 52; 52 / 2 ≈ 26)
 
     def desenhar(self, tela, camera, zoom):
-        # Calcula a posição do sprite na tela (com zoom e câmera)
         pos_x = (self.x - camera.x) * zoom
         pos_y = (self.y - camera.y) * zoom
 
         if self.sprite:
-            # Escala o sprite com base no zoom
-            scaled_width = int(40 * zoom)  # Tamanho visual: 40
-            scaled_height = int(60 * zoom)  # Tamanho visual: 60
+            scaled_width = int(40 * zoom)
+            scaled_height = int(60 * zoom)
             sprite_scaled = pygame.transform.scale(self.sprite, (scaled_width, scaled_height))
-
-            # Ajusta a rotação ou flip do sprite com base na direção
             if self.direcao == "esquerda":
-                sprite_scaled = pygame.transform.flip(sprite_scaled, True, False)  # Flip horizontal para esquerda
-            elif self.direcao == "direita":
-                sprite_scaled = sprite_scaled  # Sem flip, assume sprite voltado para a direita por padrão
-
-            # Desenha o sprite na tela
+                sprite_scaled = pygame.transform.flip(sprite_scaled, True, False)
             tela.blit(sprite_scaled, (pos_x, pos_y))
         else:
-            # Fallback para desenho geométrico
             scaled_width = int(40 * zoom)
             scaled_height = int(60 * zoom)
             rect_scaled = pygame.Rect(pos_x, pos_y, scaled_width, scaled_height)
             pygame.draw.rect(tela, self.cor, rect_scaled)
 
-        # Calcula a posição e tamanho do hitbox na tela (com zoom e câmera)
-        hitbox_pos_x = (self.rect.x - camera.x) * zoom
-        hitbox_pos_y = (self.rect.y - camera.y) * zoom
-        hitbox_scaled_width = int(self.hitbox_width * zoom)
-        hitbox_scaled_height = int(self.hitbox_height * zoom)
-        hitbox_scaled = pygame.Rect(hitbox_pos_x, hitbox_pos_y, hitbox_scaled_width, hitbox_scaled_height)
+            # Calcula a posição e tamanho do hitbox na tela (com zoom e câmera)
+            hitbox_pos_x = (self.rect.x - camera.x) * zoom
+            hitbox_pos_y = (self.rect.y - camera.y) * zoom
+            hitbox_scaled_width = int(self.hitbox_width * zoom)
+            hitbox_scaled_height = int(self.hitbox_height * zoom)
+            hitbox_scaled = pygame.Rect(hitbox_pos_x, hitbox_pos_y, hitbox_scaled_width, hitbox_scaled_height)
         
         # Desenha o hitbox para visualização (em vermelho)
-        pygame.draw.rect(tela, (255, 0, 0), hitbox_scaled, 1)  # Borda vermelha de 1 pixel
+            pygame.draw.rect(tela, (255, 0, 0), hitbox_scaled, 1)  # Borda vermelha de 1 pixel
