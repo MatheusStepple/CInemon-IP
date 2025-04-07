@@ -9,7 +9,8 @@
     ],
     "fileStates": {
         "": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "#arroz": {
             "dynamicWrapping": true
@@ -43,16 +44,16 @@
             "scale": 0.15734374999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 1277.4577954319761,
-                "y": 1280.635551142006
+                "x": 1277.4577954319764,
+                "y": 1277.4577954319761
             }
         },
         "basic.tmx": {
             "scale": 0.5,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 910,
-                "y": 438
+                "x": 1202,
+                "y": 486
             }
         },
         "basic.tmx#fakemon_region_starting_town___nuevo_town_by_stopdrawingcartoons_dek37jy-pre": {
@@ -93,7 +94,7 @@
         },
         "pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1
+            "scaleInDock": 1.5
         },
         "tiles padrao.tsx": {
             "dynamicWrapping": false,
