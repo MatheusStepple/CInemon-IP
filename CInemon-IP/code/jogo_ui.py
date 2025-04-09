@@ -20,6 +20,7 @@ class JogoUI(JogoBase):
         self.mostrar_status = False
         self.mostrar_mensagem_gemas = False
         self.tempo_mensagem_gemas = 0
+        self.npc_atual = None  # Adicionado para rastrear o NPC atual em interação
 
     def _atualizar_camera(self):
         x = self.jogador.x - (LARGURA // 2) / self.zoom
@@ -194,6 +195,31 @@ class JogoUI(JogoBase):
                     self.mostrar_mensagem_gemas = True
                     self.tempo_mensagem_gemas = 180
 
+    def verificar_interacao_npc(self):
+        for npc in self.npcs:
+            distancia = math.sqrt((self.jogador.x - npc.x)**2 + (self.jogador.y - npc.y)**2)
+            if self.mapa_atual == 'basic.tmx' and distancia < 50:  # Distância de interação
+                self.npc_atual = npc  # Armazena o NPC atual interagido
+                return True
+        return False
+
+    def processar_dialogo_npc(self):
+        if not hasattr(self, 'npc_atual') or self.npc_atual is None:
+            return
+        if self.jogador.dinheiro >= 50:
+            self.mensagem_dialogo = [
+                f"{self.npc_atual.nome}: Quer gastar 50 créditos para reanimar e curar seus CInemons?",
+                "Pressione S para Sim ou N para Não"
+            ]
+        else:
+            self.mensagem_dialogo = [
+                f"{self.npc_atual.nome}: Você não tem créditos suficientes!",
+                "Volte quando tiver pelo menos 50 créditos."
+            ]
+        self.em_dialogo_npc = True
+        self.dialogo_atual = 0
+        self.resposta_npc = None
+
     def mapa(self):
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -259,8 +285,9 @@ class JogoUI(JogoBase):
         elif self.mapa_atual == 'basic.tmx':
             self.gusto.desenhar(tela, self.camera, self.zoom)
             self.pooh.desenhar(tela, self.camera, self.zoom)
-            self.fernanda.desenhar(tela, self.camera, self.zoom)  # Desenha o NPC
-        
+            for npc in self.npcs:  # Desenha todos os NPCs
+                npc.desenhar(tela, self.camera, self.zoom)
+
         for gema in self.gemas:
             gema.desenhar(tela, self.camera, self.zoom)
 

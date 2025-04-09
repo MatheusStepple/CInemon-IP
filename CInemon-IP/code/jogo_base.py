@@ -40,7 +40,7 @@ class JogoBase:
         self.pedro = None
         self.gusto = None
         self.pooh = None
-        self.fernanda = None  # Novo NPC
+        self.npcs = []  
         self.gemas = []
         
         self.definir_posicoes()
@@ -187,7 +187,10 @@ class JogoBase:
         self.pedro = Inimigo(800, 350, 'Pedro')
         self.gusto = Inimigo(300, 500, 'Gusto')
         self.pooh = Inimigo(600, 600, 'pooh')
-        self.fernanda = NPC(400, 200, 'Fernanda')  # Posição do NPC Fernanda
+        self.npcs = [
+        NPC(400, 200, 'Fernanda1', "spr_fernanda_madeiral.png"),
+        
+    ]
         self.gemas = [
             Gema(150, 150),
             Gema(250, 400),
