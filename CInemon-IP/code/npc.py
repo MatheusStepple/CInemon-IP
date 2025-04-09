@@ -2,18 +2,16 @@ import pygame
 import os
 
 class NPC:
-    def __init__(self, x, y, nome):
+    def __init__(self, x, y, nome, sprite_file="spr_fernanda_madeiral.png"):
         self.x = x
         self.y = y
         self.nome = nome
         self.width = 40
         self.height = 60
-        self.rect = pygame.Rect(self.x + 8, self.y + 18, 24, 36)  # Hitbox ajustada como o jogador
+        self.rect = pygame.Rect(self.x + 8, self.y + 18, 24, 36)  # Hitbox ajustada
         
-        # Carrega o sprite
         try:
-            sprite_path = os.path.join("Desktop", "CInemon-IP", "sprites", "spr_fernanda_madeiral.png")  
-            
+            sprite_path = os.path.join("Desktop", "CInemon-IP", "sprites", sprite_file)
             self.sprite = pygame.image.load(sprite_path).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (self.width, self.height))
         except Exception as e:
