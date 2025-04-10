@@ -27,14 +27,14 @@ class JogoUI(JogoBase):
 
     def renderizar_dialogo_inicial(self):
         self.mensagem_dialogo = [
-        'Olá, treinador! Eu sou Filipe Milk, estudante do CIn e líder da resistência contra Pedro Noites.',
-        'Ele quer impor sua grade curricular maligna, mas nós temos um plano: os CInemons!',
-        'Criados a partir de amostras roubadas do laboratório secreto de Pedro, essas criaturas digitais são nossa única esperança.',
-        'Sua missão? Reunir os fragmentos do Crachá Perdido do CIn, derrotando os capangas de Pedro espalhados pelo campus.',
-        'Cuidado: após cada batalha, visite o Centro de Cura para recuperar seus CInemons.',
-        'Quando o Crachá estiver completo, vá até a Balsa do CIn e enfrente Pedro Noites em uma batalha épica!',
-        'O futuro do curso está em suas mãos. Você está preparado?',
-        'ps: tem gemas escondidas no mapa... dizem que quem acha ganha um buff top nos CInemons 👀']
+        ['Olá, treinador! Eu sou Filipe Milk, estudante do CIn e líder da resistência contra Pedro Noites.'],
+        ['Ele quer impor sua grade curricular maligna, mas nós temos um plano: os CInemons!'],
+        ['Criados a partir de amostras roubadas do laboratório secreto de Pedro, essas criaturas digitais são nossa', 'única esperança.'],
+        ['Sua missão? Reunir os fragmentos do Crachá Perdido do CIn, derrotando os capangas de Pedro que estão', 'espalhados pelo campus.'],
+        ['Cuidado: após cada batalha, visite o Centro de Cura para recuperar seus CInemons.'],
+        ['Quando o Crachá estiver completo, vá até a Balsa do CIn e enfrente Pedro Noites em uma batalha épica!'],
+        ['O futuro do curso está em suas mãos. Você está preparado?'],
+        ['Uma dica: há gemas espalhadas pelo mapa... dizem que juntando todas seus CInemons ficam mais fortes!']]
 
 
         caminho_imagem_fundo = os.path.join("Desktop", "CInemon-IP", "graphics",'fotos', "fundo.png")
@@ -52,22 +52,43 @@ class JogoUI(JogoBase):
         pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
         tela.blit(imagem_scaled,(750,220))
 
-        texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual], True, PRETO)
-        tela.blit(texto, (70, ALTURA - 180))
-        self.estado = 'dialogo_inicial'
-        instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
-        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 100))
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_SPACE:
-                    if self.dialogo_atual < len(self.mensagem_dialogo) - 1:
-                        self.dialogo_atual += 1
-                    else:
-                        self.estado = "escolher_cinemon"  
-                        self.dialogo_atual = 0  
+        if len(self.mensagem_dialogo[self.dialogo_atual]) > 1:
+            texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual][0], True, PRETO)
+            texto2 = fonte.render(self.mensagem_dialogo[self.dialogo_atual][1], True, PRETO)
+            tela.blit(texto, (70, ALTURA - 180))
+            tela.blit(texto2, (70, ALTURA - 150))
+            self.estado = 'dialogo_inicial'
+            instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
+            tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 100))
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_SPACE:
+                        if self.dialogo_atual < len(self.mensagem_dialogo) - 1:
+                            self.dialogo_atual += 1
+                        else:
+                            self.estado = "escolher_cinemon"  
+                            self.dialogo_atual = 0  
+
+        else:    
+            texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual][0], True, PRETO)
+            tela.blit(texto, (70, ALTURA - 180))
+            self.estado = 'dialogo_inicial'
+            instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
+            tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 100))
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if evento.type == pygame.KEYDOWN:
+                    if evento.key == pygame.K_SPACE:
+                        if self.dialogo_atual < len(self.mensagem_dialogo) - 1:
+                            self.dialogo_atual += 1
+                        else:
+                            self.estado = "escolher_cinemon"  
+                            self.dialogo_atual = 0  
         
 
 
