@@ -20,6 +20,59 @@ class JogoUI(JogoBase):
         self.mostrar_status = False
         self.mostrar_mensagem_gemas = False
         self.tempo_mensagem_gemas = 0
+        self.npc_atual = None  # Adicionado para rastrear o NPC atual em interação
+        self.estado = "menu"  # Define o estado inicial como diálogo inicial
+        self.dialogo_atual = 0
+
+
+    def renderizar_dialogo_inicial(self):
+        self.mensagem_dialogo = [
+        'Olá, treinador! Eu sou Filipe Milk, estudante do CIn e líder da resistência contra Pedro Noites.',
+        'Ele quer impor sua grade curricular maligna, mas nós temos um plano: os CInemons!',
+        'Criados a partir de amostras roubadas do laboratório secreto de Pedro, essas criaturas digitais são nossa única esperança.',
+        'Sua missão? Reunir os fragmentos do Crachá Perdido do CIn, derrotando os capangas de Pedro espalhados pelo campus.',
+        'Cuidado: após cada batalha, visite o Centro de Cura para recuperar seus CInemons.',
+        'Quando o Crachá estiver completo, vá até a Balsa do CIn e enfrente Pedro Noites em uma batalha épica!',
+        'O futuro do curso está em suas mãos. Você está preparado?',
+        'ps: tem gemas escondidas no mapa... dizem que quem acha ganha um buff top nos CInemons 👀']
+
+
+        caminho_imagem_fundo = os.path.join("Desktop", "CInemon-IP", "graphics",'fotos', "fundo.png")
+        self.imagem_fundo = pygame.image.load(caminho_imagem_fundo)
+        imagem_fundo_scaled = pygame.transform.smoothscale(self.imagem_fundo,(LARGURA,ALTURA))
+
+        caminho_imagem = os.path.join("Desktop", "CInemon-IP", "graphics",'fotos', "milk.png")
+        self.imagem = pygame.image.load(caminho_imagem)
+        imagem_scaled = pygame.transform.smoothscale(self.imagem, (400, 300))
+        
+
+
+        tela.blit(imagem_fundo_scaled,(0,0))
+        pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
+        pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
+        tela.blit(imagem_scaled,(750,220))
+
+        texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual], True, PRETO)
+        tela.blit(texto, (70, ALTURA - 180))
+        self.estado = 'dialogo_inicial'
+        instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
+        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 100))
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_SPACE:
+                    if self.dialogo_atual < len(self.mensagem_dialogo) - 1:
+                        self.dialogo_atual += 1
+                    else:
+                        self.estado = "escolher_cinemon"  
+                        self.dialogo_atual = 0  
+        
+
+
+
+
 
     def _atualizar_camera(self):
         x = self.jogador.x - (LARGURA // 2) / self.zoom
@@ -40,7 +93,7 @@ class JogoUI(JogoBase):
                 sys.exit()
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_RETURN:
-                    self.estado = "escolher_cinemon"
+                    self.estado = "dialogo_inicial"
                 if evento.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
@@ -194,6 +247,31 @@ class JogoUI(JogoBase):
                     self.mostrar_mensagem_gemas = True
                     self.tempo_mensagem_gemas = 180
 
+    def verificar_interacao_npc(self):
+        for npc in self.npcs:
+            distancia = math.sqrt((self.jogador.x - npc.x)**2 + (self.jogador.y - npc.y)**2)
+            if self.mapa_atual == 'basic.tmx' and distancia < 50:  # Distância de interação
+                self.npc_atual = npc  # Armazena o NPC atual interagido
+                return True
+        return False
+
+    def processar_dialogo_npc(self):
+        if not hasattr(self, 'npc_atual') or self.npc_atual is None:
+            return
+        if self.jogador.dinheiro >= 50:
+            self.mensagem_dialogo = [
+                f"{self.npc_atual.nome}: Quer gastar 50 créditos para reanimar e curar seus CInemons?",
+                "Pressione S para Sim ou N para Não"
+            ]
+        else:
+            self.mensagem_dialogo = [
+                f"{self.npc_atual.nome}: Você não tem créditos suficientes!",
+                "Volte quando tiver pelo menos 50 créditos."
+            ]
+        self.em_dialogo_npc = True
+        self.dialogo_atual = 0
+        self.resposta_npc = None
+
     def mapa(self):
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -259,8 +337,9 @@ class JogoUI(JogoBase):
         elif self.mapa_atual == 'basic.tmx':
             self.gusto.desenhar(tela, self.camera, self.zoom)
             self.pooh.desenhar(tela, self.camera, self.zoom)
-            self.fernanda.desenhar(tela, self.camera, self.zoom)  # Desenha o NPC
-        
+            for npc in self.npcs:  # Desenha todos os NPCs
+                npc.desenhar(tela, self.camera, self.zoom)
+
         for gema in self.gemas:
             gema.desenhar(tela, self.camera, self.zoom)
 
@@ -313,6 +392,8 @@ class JogoUI(JogoBase):
                 self.batalha_ui.renderizar_batalha(self)
             elif self.estado == "trocar_cinemon":
                 self.batalha_ui.tela_trocar_cinemon(self)
+            elif self.estado == 'dialogo_inicial':
+                self.renderizar_dialogo_inicial()
             elif self.estado == "dialogo":
                 self.renderizar_dialogo()
             elif self.estado == "dialogo_npc":
