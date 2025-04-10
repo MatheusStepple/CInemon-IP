@@ -38,7 +38,7 @@ class Inimigo:
             self.tem_imagem = False
 
     def desenhar(self, tela, camera, zoom):
-        # Calcula as dimensões e posição escaladas com base no zoom
+        
         scaled_width = int(40 * zoom)
         scaled_height = int(60 * zoom)
         pos_x = (self.x - camera.x) * zoom
@@ -46,13 +46,13 @@ class Inimigo:
         rect_scaled = pygame.Rect(pos_x, pos_y, scaled_width, scaled_height)
 
         if self.tem_imagem and (self.nome == 'Pedro' or self.nome == 'pooh'):
-            # Escala a imagem com base no zoom e desenha
+            
             imagem_scaled = pygame.transform.scale(self.imagem, (scaled_width, scaled_height))
             tela.blit(imagem_scaled, (pos_x, pos_y))
         else:
-            # Desenha um retângulo colorido para inimigos sem imagem
+            
             pygame.draw.rect(tela, self.cor, rect_scaled)
-            # Detalhes do rosto escalados
+           
             centro_x = pos_x + scaled_width // 2
             centro_y = pos_y + scaled_height // 4
             raio_cabeca = int(10 * zoom)

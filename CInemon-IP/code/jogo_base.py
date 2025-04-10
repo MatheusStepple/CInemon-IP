@@ -40,7 +40,7 @@ class JogoBase:
         self.pedro = None
         self.gusto = None
         self.pooh = None
-        self.fernanda = None  # Novo NPC
+        self.npcs = []  
         self.gemas = []
         
         self.definir_posicoes()
@@ -52,13 +52,13 @@ class JogoBase:
         self.cinemons_disponiveis = self.criar_cinemons_disponiveis()
         self.cinemons_escolhidos = []
         self.pedro_cinemons = [
-            CInemon("Paradoxium", "ESPECIAL", 15, 20, [("Paradoxo Lógico", 30), ("Indução Forte", 40)])
+            CInemon("Paradoxium", "ESPECIAL", 95, 20, [("Paradoxo Lógico", 30), ("Indução Forte", 40)])
         ]
         self.gusto_cinemons = [
-            CInemon("Discretex", "ESPECIAL", 15, 20, [("Dano Imoral", 30), ("Chama", 40)])
+            CInemon("Discretex", "ESPECIAL", 195, 20, [("Dano Imoral", 30), ("Chama", 40)])
         ]
         self.pooh_cinemons = [
-            CInemon("Discretex", "ESPECIAL", 15, 20, [("Dano Imoral", 30), ("Chama", 40)])
+            CInemon("Discretex", "ESPECIAL", 195, 20, [("Dano Imoral", 30), ("Chama", 40)])
         ]
         self.em_batalha = False
         self.turno_jogador = True
@@ -86,6 +86,8 @@ class JogoBase:
         self.gemas_coletadas = 0
         self.em_dialogo_npc = False  # Controla o diálogo com o NPC
         self.resposta_npc = None  # Armazena a resposta do jogador ('sim' ou 'nao')
+
+    
     
     def verificar_colisao_porta(self):
         """Verifica se o jogador colidiu com uma porta e troca o mapa se necessário"""
@@ -183,11 +185,14 @@ class JogoBase:
 
 
     def definir_posicoes(self):
-        self.jogador = Personagem(100, 100, self.map_width, self.map_height)
+        self.jogador = Personagem(1695, 710, self.map_width, self.map_height)
         self.pedro = Inimigo(800, 350, 'Pedro')
         self.gusto = Inimigo(300, 500, 'Gusto')
         self.pooh = Inimigo(600, 600, 'pooh')
-        self.fernanda = NPC(400, 200, 'Fernanda')  # Posição do NPC Fernanda
+        self.npcs = [
+        NPC(400, 200, 'Fernanda1', "spr_fernanda_madeiral.png"),
+        
+    ]
         self.gemas = [
             Gema(150, 150),
             Gema(250, 400),
@@ -235,16 +240,16 @@ class JogoBase:
 
     def criar_cinemons_disponiveis(self):
         return [
-            CInemon("Heatbug", "FOGO", 10, 120, [("Bug Flamejante", 25), ("Firewall", 20)]),
+            CInemon("Firewall", "FOGO", 10, 120, [("Bug Flamejante", 25), ("Firewall", 20)]),
             CInemon("Pikacode", "ELETRICO", 10, 110, [("Raio Código", 30), ("Compile Shock", 25)]),
-            CInemon("Minerbit", "TERRA", 10, 130, [("Terrabyte", 20), ("Overclock Quake", 35)]),
-            CInemon("Hydrabyte", "AGUA", 10, 125, [("Onda de Dados", 25), ("Debbubble", 30)]),
-            CInemon("Dataflora", "PLANTA", 10, 115, [("Árvore Binária", 20), ("Trepadeira Viral", 25)]),
+            CInemon("Terrabyte", "TERRA", 10, 130, [("Terrabyte", 20), ("Overclock Quake", 35)]),
+            CInemon("Aqualynx", "AGUA", 10, 125, [("Onda de Dados", 25), ("Debbubble", 30)]),
+            CInemon("Grasscat", "PLANTA", 10, 115, [("Árvore Binária", 20), ("Trepadeira Viral", 25)]),
             CInemon("Ampereon", "ELETRICO", 10, 105, [("Nanotrovoada", 30), ("Corrente de Dados", 20)]),
             CInemon("Terrabyte", "TERRA", 10, 135, [("Código Sísmico", 35), ("Data Geodo", 25)]),
-            CInemon("Debbubble", "AGUA", 10, 120, [("Bubblesorted", 25), ("Maremoto Quântico", 30)]),
-            CInemon("Treebit", "PLANTA", 10, 125, [("Cipó Cibernético", 20), ("Sistema de Vinhas", 25)]),
-            CInemon("Patchburn", "FOGO", 10, 110, [("Vírus Ígneo", 30), ("Nano Queimadura", 20)])
+            CInemon("Bitwhale", "AGUA", 10, 120, [("Bubblesorted", 25), ("Maremoto Quântico", 30)]),
+            CInemon("Leafbyte", "PLANTA", 10, 125, [("Cipó Cibernético", 20), ("Sistema de Vinhas", 25)]),
+            CInemon("Blazetron", "FOGO", 10, 110, [("Vírus Ígneo", 30), ("Nano Queimadura", 20)])
         ]
 
     def verificar_colisao(self):
@@ -408,7 +413,7 @@ class JogoBase:
     def executar_ataque_jogador(self):
         if self.acao_selecionada is not None:
             dano, mensagem = self.calcular_dano(self.cinemon_jogador_atual, self.cinemon_inimigo_atual, self.acao_selecionada)
-            self.cinemon_inimigo_atual.hp -= dano
+            self.cinemon_inimigo_atual.hp = max(0, self.cinemon_inimigo_atual.hp - dano)  # Limita HP a 0
             self.mensagem_atual = mensagem
             self.acao_selecionada = None
             self.aguardando_espaco = True
@@ -418,7 +423,7 @@ class JogoBase:
 
     def executar_ataque_inimigo(self):
         dano, mensagem = self.calcular_dano(self.cinemon_inimigo_atual, self.cinemon_jogador_atual, random.randint(0, 1))
-        self.cinemon_jogador_atual.hp -= dano
+        self.cinemon_jogador_atual.hp = max(0, self.cinemon_jogador_atual.hp - dano)  # Limita HP a 0
         self.mensagem_atual = mensagem
         self.aguardando_espaco = True
         self.fase_batalha = 3
