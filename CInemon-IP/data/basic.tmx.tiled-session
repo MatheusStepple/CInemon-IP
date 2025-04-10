@@ -3,12 +3,14 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "basic.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "fileStates": {
         "": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "#arroz": {
             "dynamicWrapping": true
@@ -30,17 +32,53 @@
         "#tree_3": {
             "scaleInDock": 1
         },
-        "Objects.tsx": {
+        "C:/Users/Matheus/Desktop/Gabrielzao/data/pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 1
         },
-        "basic.tmx": {
-            "scale": 0.25,
+        "Objects.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 0.25
+        },
+        "arroz.tmx": {
+            "scale": 0.15734374999999998,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": -784,
-                "y": 1256
+                "x": 1277.4577954319764,
+                "y": 1277.4577954319761
             }
+        },
+        "basic.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1202,
+                "y": 486
+            }
+        },
+        "basic.tmx#fakemon_region_starting_town___nuevo_town_by_stopdrawingcartoons_dek37jy-pre": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.5
+        },
+        "basic.tmx#iki_town__tile_test__by_kingtapir_ddhlarg-fullview": {
+            "scaleInDock": 1
+        },
+        "basic.tmx#neo_islands_template_city_by_fallen_angel_snoops_d3hbnjc-375w": {
+            "scaleInDock": 1
+        },
+        "basic.tmx#pokemon_bw3__nuvema_town_by_midnitez_remix_d9wq577-fullview": {
+            "scaleInDock": 0.75
+        },
+        "basic.tmx#pokemon_style_monster_mmorpg_map_volcano_cave_2f_by_monstermmorpg_d4ah3ga (1)": {
+            "dynamicWrapping": false
+        },
+        "basic.tmx#pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
+        },
+        "basic.tmx#tiles": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1
         },
         "objetos.tmx": {
             "scale": 0.66796875,
@@ -54,6 +92,10 @@
             "dynamicWrapping": true,
             "scaleInEditor": 0.25
         },
+        "pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1.5
+        },
         "tiles padrao.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 0.33,
@@ -61,7 +103,7 @@
         }
     },
     "last.externalTilesetPath": "C:/Users/PC/Desktop/projetoip/data",
-    "last.imagePath": "C:/Users/PC/Desktop/projetoip/graphics/objects",
+    "last.imagePath": "C:/Users/Matheus/Desktop/CInemon-IP/maps tiled",
     "map.height": 100,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 128,
@@ -69,19 +111,21 @@
     "map.width": 100,
     "openFiles": [
         "tiles padrao.tsx",
-        "basic.tmx"
+        "basic.tmx",
+        "arroz.tmx"
     ],
     "project": "basic.tmx.tiled-project",
     "recentFiles": [
         "tiles padrao.tsx",
+        "arroz.tmx",
         "basic.tmx",
         "objetos.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 128,
-        "width": 128
+        "height": 32,
+        "width": 32
     },
-    "tileset.type": 1
+    "tileset.type": 0
 }
