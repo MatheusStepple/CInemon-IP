@@ -21,7 +21,7 @@ class BatalhaUI(JogoBase):
         if chave_cache in self.sprites_cache:
             return self.sprites_cache[chave_cache]
         
-        sprite_path = os.path.join(r"C:\Users\PC\Desktop\CInemon-IP\cinemons", f"{nome}.png")
+        sprite_path = os.path.join(r"Desktop\CInemon-IP\cinemons", f"{nome}.png")
         try:
             sprite = pygame.image.load(sprite_path).convert_alpha()
             sprite = pygame.transform.scale(sprite, tamanho)
