@@ -12,7 +12,7 @@ class NPC:
         
         try:
             
-            sprite_path = os.path.join("Desktop", "CInemon-IP", "sprites", sprite_file)
+            sprite_path = os.path.join("sprites", sprite_file)
             self.sprite = pygame.image.load(sprite_path).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (self.width, self.height))
         except Exception as e:

@@ -26,7 +26,7 @@ class JogoUI(JogoBase):
         self.sprites_cache = {}  # Cache para sprites
 
         # Carregar joy.png
-        caminho_joy = os.path.join("Desktop", "CInemon-IP", "graphics", "fotos", "joy.png")
+        caminho_joy = os.path.join("graphics", "fotos", "joy.png")
         try:
             self.joy_image = pygame.image.load(caminho_joy)
             self.joy_image = pygame.transform.smoothscale(self.joy_image, (LARGURA, ALTURA))
@@ -46,11 +46,11 @@ class JogoUI(JogoBase):
             ['Uma dica: há gemas espalhadas pelo mapa... dizem que juntando todas seus CInemons ficam mais fortes!']
         ]
 
-        caminho_imagem_fundo = os.path.join("Desktop", "CInemon-IP", "graphics", 'fotos', "fundo.png")
+        caminho_imagem_fundo = os.path.join("graphics", 'fotos', "fundo.png")
         self.imagem_fundo = pygame.image.load(caminho_imagem_fundo)
         imagem_fundo_scaled = pygame.transform.smoothscale(self.imagem_fundo, (LARGURA, ALTURA))
 
-        caminho_imagem = os.path.join("Desktop", "CInemon-IP", "graphics", 'fotos', "milk.png")
+        caminho_imagem = os.path.join("graphics", 'fotos', "milk.png")
         self.imagem = pygame.image.load(caminho_imagem)
         imagem_scaled = pygame.transform.smoothscale(self.imagem, (400, 300))
 
@@ -150,7 +150,7 @@ class JogoUI(JogoBase):
             
             # Caminho absoluto a partir do diretório do script
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            sprite_path = os.path.join(r"Desktop\CInemon-IP\cinemons", f"{nome}.png")
+            sprite_path = os.path.join(r"cinemons", f"{nome}.png")
             
             sprite = pygame.image.load(sprite_path).convert_alpha()
             sprite = pygame.transform.scale(sprite, (80, 80))
@@ -212,7 +212,7 @@ class JogoUI(JogoBase):
 
 
 
-        caminho_imagem = os.path.join("Desktop", "CInemon-IP", "graphics", 'fotos', f'{self.inimigo_atual}.png')
+        caminho_imagem = os.path.join("graphics", 'fotos', f'{self.inimigo_atual}.png')
         self.imagem = pygame.image.load(caminho_imagem)
         imagem_scaled = pygame.transform.smoothscale(self.imagem, (400, 300))
         tela.blit(imagem_scaled, (750, 220))
@@ -322,7 +322,7 @@ class JogoUI(JogoBase):
 
             try:
                 
-                image_path = os.path.join("Desktop", "CInemon-IP", "cinemons", f"{nome_str}.png")
+                image_path = os.path.join("cinemons", f"{nome_str}.png")
 
                 cinemon_image = pygame.image.load(image_path)
                 cinemon_image = pygame.transform.scale(cinemon_image, (150, 150))

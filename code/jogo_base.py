@@ -43,7 +43,7 @@ class JogoBase:
         self.estado = "menu"
 
         # Define o mapa inicial
-        caminho_mapa = os.path.join("Desktop", "CInemon-IP", "data", "basic.tmx")
+        caminho_mapa = os.path.join("data", "basic.tmx")
         self.mapa_atual = "basic.tmx"
         self.mapa_anterior = None
 
@@ -80,20 +80,20 @@ class JogoBase:
         self.cinemons_disponiveis = self.criar_cinemons_disponiveis()
         self.cinemons_escolhidos = []
         self.pedro_cinemons = [
-            CInemon("Discretex", "ESPECIAL", 10, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
-            CInemon("Paradoxium", "ESPECIAL", 20, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])
+            CInemon("Discretex", "ESPECIAL", 100, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
+            CInemon("Paradoxium", "ESPECIAL", 200, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])
         ]
         self.Sergio_cinemons = [
-            CInemon("Serpython", "FOGO", 5, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
-            CInemon("Redlion", "FOGO", 5, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)])
+            CInemon("Serpython", "FOGO", 50, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
+            CInemon("Redlion", "FOGO", 50, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)])
         ]
         self.Fernanda_cinemons = [
-            CInemon("Beebug", "PLANTA", 5, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
-            CInemon("Butterfault", "PLANTA", 5, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])
+            CInemon("Beebug", "PLANTA", 50, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
+            CInemon("Butterfault", "PLANTA", 50, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])
         ]
         self.Ricardo_cinemons = [
-            CInemon("Bithog", "TERRA", 8, 20, [("Nanofragmentação", 30), ("Data geodo", 20)]),
-            CInemon("MinerByte", "TERRA", 11, 20, [("Overclock Quake", 10), ("Código sísmico", 40)])
+            CInemon("Bithog", "TERRA", 80, 20, [("Nanofragmentação", 30), ("Data geodo", 20)]),
+            CInemon("MinerByte", "TERRA", 110, 20, [("Overclock Quake", 10), ("Código sísmico", 40)])
         ]
         self.em_batalha = False
         self.turno_jogador = True
@@ -146,7 +146,7 @@ class JogoBase:
     def trocar_mapa(self, novo_mapa, spawn_x=None, spawn_y=None):
         """Troca o mapa atual para um novo mapa TMX e rastreia o mapa anterior"""
         self.mapa_anterior = self.mapa_atual
-        caminho_mapa = os.path.join("Desktop", "CInemon-IP", "data", novo_mapa)
+        caminho_mapa = os.path.join("data", novo_mapa)
 
         self.tmx_data = load_pygame(caminho_mapa)
         print(f"Mapa trocado para {novo_mapa} com sucesso: {self.tmx_data.width}x{self.tmx_data.height}")
