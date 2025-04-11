@@ -3,12 +3,13 @@ import os
 from config import BRANCO, PRETO, VERMELHO, AZUL, VERDE, AMARELO, CINZA, ROXO, LARANJA, MARROM, AZUL_ESCURO
 
 class Personagem:
-    def __init__(self, x, y, map_width, map_height):
+    def __init__(self, x, y, map_width, map_height, mapa_atual=None):
         self.x = x
         self.y = y
         self.x_anterior = x
         self.y_anterior = y
-        self.velocidade = 5
+        self.velocidade = 5  # Velocidade padrão
+        self.mapa_atual = mapa_atual  # Mapa atual (ex.: 'basic.tmx' ou 'cin.tmx')
         self.map_width = map_width
         self.map_height = map_height
         self.hitbox_width = 8
@@ -51,6 +52,12 @@ class Personagem:
         self.sprite_atual = self.sprites["baixo"][0]
 
     def mover(self, dx, dy):
+        # Ajusta a velocidade: se o mapa for cin.tmx, velocidade vira 1
+        if self.mapa_atual == 'cin.tmx':
+            self.velocidade = 2
+        else:
+            self.velocidade = 4
+
         self.x_anterior = self.x
         self.y_anterior = self.y
         
@@ -97,8 +104,6 @@ class Personagem:
         sprite_scaled = pygame.transform.scale(self.sprite_atual, (scaled_width, scaled_height))
 
         # Inverte o sprite para a esquerda
-        
-
         tela.blit(sprite_scaled, (pos_x, pos_y))
 
         # Desenha o hitbox (opcional, para debug)

@@ -23,34 +23,32 @@ class JogoUI(JogoBase):
         self.npc_atual = None  # Adicionado para rastrear o NPC atual em interação
         self.estado = "menu"  # Define o estado inicial como diálogo inicial
         self.dialogo_atual = 0
-
+        self.sprites_cache = {}  # Cache para sprites
 
     def renderizar_dialogo_inicial(self):
         self.mensagem_dialogo = [
-        ['Olá, treinador! Eu sou Filipe Milk, estudante do CIn e líder da resistência contra Pedro Noites.'],
-        ['Ele quer impor sua grade curricular maligna, mas nós temos um plano: os CInemons!'],
-        ['Criados a partir de amostras roubadas do laboratório secreto de Pedro, essas criaturas digitais são nossa', 'única esperança.'],
-        ['Sua missão? Reunir os fragmentos do Crachá Perdido do CIn, derrotando os capangas de Pedro que estão', 'espalhados pelo campus.'],
-        ['Cuidado: após cada batalha, visite o Centro de Cura para recuperar seus CInemons.'],
-        ['Quando o Crachá estiver completo, vá até a Balsa do CIn e enfrente Pedro Noites em uma batalha épica!'],
-        ['O futuro do curso está em suas mãos. Você está preparado?'],
-        ['Uma dica: há gemas espalhadas pelo mapa... dizem que juntando todas seus CInemons ficam mais fortes!']]
+            ['Olá, treinador! Eu sou Filipe Milk, estudante do CIn e líder da resistência contra Pedro Noites.'],
+            ['Ele quer impor sua grade curricular maligna, mas nós temos um plano: os CInemons!'],
+            ['Criados a partir de amostras roubadas do laboratório secreto de Pedro, essas criaturas digitais são nossa', 'única esperança.'],
+            ['Sua missão? Reunir os fragmentos do Crachá Perdido do CIn, derrotando os capangas de Pedro que estão', 'espalhados pelo campus.'],
+            ['Cuidado: após cada batalha, visite o Centro de Cura para recuperar seus CInemons.'],
+            ['Quando o Crachá estiver completo, vá até a Balsa do CIn e enfrente Pedro Noites em uma batalha épica!'],
+            ['O futuro do curso está em suas mãos. Você está preparado?'],
+            ['Uma dica: há gemas espalhadas pelo mapa... dizem que juntando todas seus CInemons ficam mais fortes!']
+        ]
 
-
-        caminho_imagem_fundo = os.path.join("Desktop", "CInemon-IP", "graphics",'fotos', "fundo.png")
+        caminho_imagem_fundo = os.path.join("Desktop", "CInemon-IP", "graphics", 'fotos', "fundo.png")
         self.imagem_fundo = pygame.image.load(caminho_imagem_fundo)
-        imagem_fundo_scaled = pygame.transform.smoothscale(self.imagem_fundo,(LARGURA,ALTURA))
+        imagem_fundo_scaled = pygame.transform.smoothscale(self.imagem_fundo, (LARGURA, ALTURA))
 
-        caminho_imagem = os.path.join("Desktop", "CInemon-IP", "graphics",'fotos', "milk.png")
+        caminho_imagem = os.path.join("Desktop", "CInemon-IP", "graphics", 'fotos', "milk.png")
         self.imagem = pygame.image.load(caminho_imagem)
         imagem_scaled = pygame.transform.smoothscale(self.imagem, (400, 300))
-        
 
-
-        tela.blit(imagem_fundo_scaled,(0,0))
+        tela.blit(imagem_fundo_scaled, (0, 0))
         pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
         pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
-        tela.blit(imagem_scaled,(750,220))
+        tela.blit(imagem_scaled, (750, 220))
 
         if len(self.mensagem_dialogo[self.dialogo_atual]) > 1:
             texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual][0], True, PRETO)
@@ -71,7 +69,6 @@ class JogoUI(JogoBase):
                         else:
                             self.estado = "escolher_cinemon"  
                             self.dialogo_atual = 0  
-
         else:    
             texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual][0], True, PRETO)
             tela.blit(texto, (70, ALTURA - 180))
@@ -89,11 +86,6 @@ class JogoUI(JogoBase):
                         else:
                             self.estado = "escolher_cinemon"  
                             self.dialogo_atual = 0  
-        
-
-
-
-
 
     def _atualizar_camera(self):
         x = self.jogador.x - (LARGURA // 2) / self.zoom
@@ -129,9 +121,33 @@ class JogoUI(JogoBase):
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, 400))
 
     def tela_escolha_cinemon(self):
-        tela.fill((240, 240, 240))
+        tela.fill((240, 240, 240))  # Fundo cinza claro
         titulo = fonte_grande.render("Escolha 3 CInemons", True, PRETO)
         tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 50))
+
+        # Dicionário de cores por tipo (usando tipos em maiúsculas, sem acentos)
+        cores_tipos = {
+            "FOGO": VERMELHO,
+            "AGUA": AZUL,
+            "PLANTA": VERDE,
+            "ELETRICO": AMARELO,
+            "TERRA": (139, 69, 19),  # Marrom para Terra
+        }
+
+        def carregar_sprite_cinemon(nome):
+            """Carrega o sprite do CInemon em 80x80 pixels."""
+            if nome in self.sprites_cache:
+                return self.sprites_cache[nome]
+            
+            # Caminho absoluto a partir do diretório do script
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            sprite_path = os.path.join(r"Desktop\CInemon-IP\cinemons", f"{nome}.png")
+            
+            sprite = pygame.image.load(sprite_path).convert_alpha()
+            sprite = pygame.transform.scale(sprite, (80, 80))
+            self.sprites_cache[nome] = sprite
+            return sprite
+            
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -153,23 +169,28 @@ class JogoUI(JogoBase):
 
         self.rects_cinemon = []
         for i, cinemon in enumerate(self.cinemons_disponiveis):
-            x = 150 + (i % 5) * 180
-            y = 150 + (i // 5) * 180
+            x = 150 + (i % 5) * 180  # 5 colunas
+            y = 150 + (i // 5) * 180  # 2 linhas
             rect = pygame.Rect(x, y, 150, 150)
             self.rects_cinemon.append(rect)
 
-            cor_fundo = ROXO if i in self.cinemons_escolhidos else BRANCO
-            pygame.draw.rect(tela, cor_fundo, rect)
+            # Cor do card baseada no tipo
+            cor_card = cores_tipos[cinemon.tipo]  # Usa o tipo em maiúsculas, sem acentos
+            pygame.draw.rect(tela, cor_card if i not in self.cinemons_escolhidos else ROXO, rect)
             pygame.draw.rect(tela, PRETO, rect, 2)
 
+            # Sprite
+            sprite = carregar_sprite_cinemon(cinemon.nome)
+            if sprite:
+                tela.blit(sprite, (x + 35, y + 40))  # Centralizado no topo
+            else:
+                pygame.draw.rect(tela, cinemon.cor, (x + 35, y + 40, 80, 80))
+
+            # Nome
             nome = fonte.render(cinemon.nome, True, PRETO)
-            tipo = fonte.render(cinemon.tipo, True, cinemon.cor)
-            tela.blit(nome, (x + 75 - nome.get_width()//2, y + 20))
-            tela.blit(tipo, (x + 75 - tipo.get_width()//2, y + 50))
+            tela.blit(nome, (x + 75 - nome.get_width()//2, y + 5))
 
-            status = fonte.render(f"HP: {cinemon.hp} ATQ: {cinemon.ataques[0][1]}", True, PRETO)
-            tela.blit(status, (x + 75 - status.get_width()//2, y + 80))
-
+           
         instrucao = fonte.render(f"Selecionados: {len(self.cinemons_escolhidos)}/3 - ENTER para confirmar", True, PRETO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
 
@@ -353,16 +374,18 @@ class JogoUI(JogoBase):
 
         self.jogador.desenhar(tela, self.camera, self.zoom)
 
-        if self.mapa_atual == 'arroz.tmx':
+        if self.mapa_atual == 'cin.tmx':
             self.pedro.desenhar(tela, self.camera, self.zoom)
         elif self.mapa_atual == 'basic.tmx':
-            self.Fernanda.desenhar(tela, self.camera, self.zoom)
             self.Sergio.desenhar(tela, self.camera, self.zoom)
+            self.Fernanda.desenhar(tela, self.camera, self.zoom)
+            self.Ricardo.desenhar(tela, self.camera, self.zoom)
             for npc in self.npcs:  # Desenha todos os NPCs
                 npc.desenhar(tela, self.camera, self.zoom)
 
         for gema in self.gemas:
-            gema.desenhar(tela, self.camera, self.zoom)
+            if self.mapa_atual == 'basic.tmx':
+                gema.desenhar(tela, self.camera, self.zoom)
 
         instrucao = fonte.render("WASD/Setas: Mover | ESC: Status | ESPAÇO: Falar com NPC", True, BRANCO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 30))
@@ -376,6 +399,7 @@ class JogoUI(JogoBase):
         if self.batalha_vencida_pedro:
             mensagem = fonte.render("Você já derrotou Pedro Manhães!", True, AZUL)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 50))
+            self.estado = "creditos"
             
         if self.batalha_vencida_Sergio:
             mensagem = fonte.render("Você já derrotou Sergio!", True, VERDE)
@@ -384,12 +408,23 @@ class JogoUI(JogoBase):
         if self.batalha_vencida_Fernanda: 
             mensagem = fonte.render("Você já derrotou Fernanda!", True, VERMELHO)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 110))
+        if self.batalha_vencida_Ricardo: 
+            mensagem = fonte.render("Você já derrotou Ricardo!", True, VERMELHO)
+            tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 130))
             
         texto_dinheiro = fonte.render(f'Você tem {self.jogador.dinheiro} créditos', True, AMARELO)
         tela.blit(texto_dinheiro, (10, 40))
         
         texto_gemas = fonte.render(f"Gemas: {self.gemas_coletadas}", True, AMARELO)
         tela.blit(texto_gemas, (10, 70))
+        
+        # Novo: Exibir pedaços de crachá apenas se o crachá não estiver completo
+        if self.cracha_completo == 0:
+            texto_pedacos_cracha = fonte.render(f"Pedaços de Crachá: {self.pedacos_cracha}/3", True, AMARELO)
+            tela.blit(texto_pedacos_cracha, (10, 100))
+        else:
+            texto_cracha_completo = fonte.render("Crachá Completo", True, AMARELO)
+            tela.blit(texto_cracha_completo, (10, 100))
 
         if self.gemas_coletadas >= 4 and self.mostrar_mensagem_gemas:
             mensagem = fonte_grande.render("Parabéns! Você pegou as 4 gemas!", True, VERDE)
@@ -419,9 +454,33 @@ class JogoUI(JogoBase):
                 self.renderizar_dialogo()
             elif self.estado == "dialogo_npc":
                 self.renderizar_dialogo_npc()
+            elif self.estado == "creditos":
+                self.creditos()
 
             pygame.display.flip()
             relogio.tick(60)
+
+    def creditos(self):
+        self.estado = 'creditos'
+        tela.fill(AZUL)
+        titulo_1 = fonte_grande.render("CINEMON IP", True, BRANCO)
+        subtitulo_1 = fonte.render("Felipe Berardo, Gabriel Machado, Guilherme Máximo, Matheus Henrique, Matheus Stepple, Vinícius Pena", True, BRANCO)
+        instrucao_1 = fonte.render("Muito Obrigado", True, BRANCO)
+        instrucao_2 = fonte.render("Pressione ESPAÇO para sair", True, BRANCO)
+
+        tela.blit(titulo_1, (LARGURA//2 - titulo_1.get_width()//2, 200))
+        tela.blit(subtitulo_1, (LARGURA//2 - subtitulo_1.get_width()//2, 300))
+        tela.blit(instrucao_1, (LARGURA//2 - instrucao_1.get_width()//2, 400))
+        tela.blit(instrucao_2, (LARGURA//2 - instrucao_2.get_width()//2, 450))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_SPACE:
+                    pygame.quit()
+                    sys.exit()
 
 def main():
     jogo = JogoUI()
