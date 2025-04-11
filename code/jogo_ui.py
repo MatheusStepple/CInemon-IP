@@ -206,7 +206,19 @@ class JogoUI(JogoBase):
         tela.fill(AZUL_ESCURO)
         pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
         pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
+        #teste
+
         
+
+
+
+        caminho_imagem = os.path.join("Desktop", "CInemon-IP", "graphics", 'fotos', f'{self.inimigo_atual}.png')
+        self.imagem = pygame.image.load(caminho_imagem)
+        imagem_scaled = pygame.transform.smoothscale(self.imagem, (400, 300))
+        tela.blit(imagem_scaled, (750, 220))
+
+
+
         texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual], True, PRETO)
         tela.blit(texto, (70, ALTURA - 180))
         
@@ -309,7 +321,9 @@ class JogoUI(JogoBase):
             status = fonte.render("Vivo" if cinemon.hp > 0 else "Morto", True, VERDE if cinemon.hp > 0 else VERMELHO)
 
             try:
+                
                 image_path = os.path.join("Desktop", "CInemon-IP", "cinemons", f"{nome_str}.png")
+
                 cinemon_image = pygame.image.load(image_path)
                 cinemon_image = pygame.transform.scale(cinemon_image, (150, 150))
                 tela.blit(cinemon_image, (100, y_pos - 30))
@@ -416,7 +430,7 @@ class JogoUI(JogoBase):
         self.verificar_colisao_barreiras()
         self.verificar_colisao()
         self.verificar_colisao_porta()  # Verifica portas de ida
-        self.verificar_colisao_porta_retorno()  # Verifica portas de volta
+        
         self.verificar_coleta_gemas()
         self._atualizar_camera()
 
@@ -514,10 +528,14 @@ class JogoUI(JogoBase):
                 self.renderizar_dialogo_npc()
             elif self.estado == "creditos":
                 self.creditos()
-
+            #aqui
+            elif self.estado == 'game_over':
+                self.game_over()
             pygame.display.flip()
             relogio.tick(60)
 
+
+    #tela de final de jogo, caso o jogagor vença
     def creditos(self):
         self.estado = 'creditos'
         tela.fill(AZUL)
@@ -539,6 +557,37 @@ class JogoUI(JogoBase):
                 if evento.key == pygame.K_SPACE:
                     pygame.quit()
                     sys.exit()
+
+    #aqui
+    # tela de final de jogo, caso o jogador perca               
+    def game_over(self):
+        self.estado = 'game_over'
+        tela.fill(VERMELHO)
+        titulo_1 = fonte_grande.render("VOCÊ PERDEU", True, BRANCO)
+        subtitulo_1 = fonte.render("Pressione ENTER para tentar novamente", True, BRANCO)
+        
+        instrucao_2 = fonte.render("Pressione ESPAÇO para sair", True, BRANCO)
+
+        tela.blit(titulo_1, (LARGURA//2 - titulo_1.get_width()//2, 200))
+        tela.blit(subtitulo_1, (LARGURA//2 - subtitulo_1.get_width()//2, 300))
+        
+        tela.blit(instrucao_2, (LARGURA//2 - instrucao_2.get_width()//2, 450))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.KEYDOWN:
+                print(f"Tecla pressionada: {evento.key}")
+                if evento.key == pygame.K_SPACE:
+                    pygame.quit()
+                    sys.exit()
+                elif evento.key == pygame.K_RETURN:
+                    self.__init__()  
+                    self.estado = "menu"  
+
+
+
 
 def main():
     jogo = JogoUI()

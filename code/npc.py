@@ -11,6 +11,7 @@ class NPC:
         self.rect = pygame.Rect(self.x + 8, self.y + 18, 24, 36)  # Hitbox ajustada
         
         try:
+            
             sprite_path = os.path.join("Desktop", "CInemon-IP", "sprites", sprite_file)
             self.sprite = pygame.image.load(sprite_path).convert_alpha()
             self.sprite = pygame.transform.scale(self.sprite, (self.width, self.height))

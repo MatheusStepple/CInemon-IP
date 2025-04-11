@@ -80,20 +80,20 @@ class JogoBase:
         self.cinemons_disponiveis = self.criar_cinemons_disponiveis()
         self.cinemons_escolhidos = []
         self.pedro_cinemons = [
-            CInemon("Discretex", "ESPECIAL", 80, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
-            CInemon("Paradoxium", "ESPECIAL", 200, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])
+            CInemon("Discretex", "ESPECIAL", 10, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
+            CInemon("Paradoxium", "ESPECIAL", 20, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])
         ]
         self.Sergio_cinemons = [
-            CInemon("Serpython", "FOGO", 45, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
-            CInemon("Redlion", "FOGO", 65, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)])
+            CInemon("Serpython", "FOGO", 5, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
+            CInemon("Redlion", "FOGO", 5, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)])
         ]
         self.Fernanda_cinemons = [
-            CInemon("Beebug", "PLANTA", 85, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
-            CInemon("Butterfault", "PLANTA", 85, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])
+            CInemon("Beebug", "PLANTA", 5, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
+            CInemon("Butterfault", "PLANTA", 5, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])
         ]
         self.Ricardo_cinemons = [
-            CInemon("Bithog", "TERRA", 80, 20, [("Nanofragmentação", 30), ("Data geodo", 20)]),
-            CInemon("MinerByte", "TERRA", 110, 20, [("Overclock Quake", 10), ("Código sísmico", 40)])
+            CInemon("Bithog", "TERRA", 8, 20, [("Nanofragmentação", 30), ("Data geodo", 20)]),
+            CInemon("MinerByte", "TERRA", 11, 20, [("Overclock Quake", 10), ("Código sísmico", 40)])
         ]
         self.em_batalha = False
         self.turno_jogador = True
@@ -165,24 +165,7 @@ class JogoBase:
 
         self._atualizar_camera()
 
-    def verificar_colisao_porta_retorno(self):
-        """Verifica se o jogador quer voltar ao mapa anterior"""
-        if not self.camada_porta or not self.mapa_anterior:
-            return False
-
-        tile_x = int(self.jogador.x // self.tmx_data.tilewidth)
-        tile_y = int(self.jogador.y // self.tmx_data.tileheight)
-
-        for x, y, tile in self.camada_porta.tiles():
-            if tile and tile_x == x and tile_y == y:
-                propriedades = self.tmx_data.get_tile_properties(x, y, self.tmx_data.layers.index(self.camada_porta))
-                if propriedades and propriedades.get("porta", False):
-                    spawn_x = propriedades.get("spawn_x", self.map_width // 2)
-                    spawn_y = propriedades.get("spawn_y", self.map_height // 2)
-                    self.trocar_mapa(self.mapa_anterior, spawn_x, spawn_y)
-                    print(f"Porta encontrada! Destino: {propriedades.get('destino')}")
-                    return True
-        return False
+    
 
     def definir_posicoes(self):
         self.jogador = Personagem(1695, 710, self.map_width, self.map_height)
@@ -293,8 +276,8 @@ class JogoBase:
                     and len(self.jogador_cinemons) > 0 and not self.batalha_vencida_Fernanda):
                 self.inimigo_atual = 'Fernanda'
                 self.mensagem_dialogo = [
-                    "Fernanda: Como você ousa falar durante a chamada!",
-                    "Fernanda: Prepare-se para enfrentar as consequências!",
+                    
+                    "Fernanda: Prepare-se para uma onda de bugs!",
                     "Fernanda: Vamos resolver isso com uma batalha de CInemons!"
                 ]
                 self.dialogo_atual = 0
@@ -374,10 +357,17 @@ class JogoBase:
         self.resposta_npc = None
 
     def iniciar_batalha(self):
-        self.em_batalha = True
-        self.turno_jogador = True
-        self.fase_batalha = 0
-        self.cinemon_jogador_atual = self.jogador_cinemons[0]
+        #aqui
+        if self.cinemon_jogador_atual is None or self.cinemon_jogador_atual.hp <= 0:
+            for cinemon in self.jogador_cinemons:
+                if cinemon.hp > 0:
+                    self.cinemon_jogador_atual = cinemon
+                    print(f"Iniciando batalha com {cinemon.nome}, pois o anterior estava derrotado.")
+                    break
+
+
+
+        
         if self.inimigo_atual == 'Pedro':
             self.cinemon_inimigo_atual = self.pedro_cinemons[0]
         elif self.inimigo_atual == 'Sergio':
@@ -482,8 +472,9 @@ class JogoBase:
         if self.inimigo_atual == 'Pedro':
             self.batalha_vencida_pedro = True
             self.jogador.dinheiro += 100
-            if self.cracha_completo == 0:
-                self.pedacos_cracha += 1
+            
+            #aqui
+            self.estado = 'creditos'
         elif self.inimigo_atual == 'Sergio':
             self.batalha_vencida_Sergio = True
             self.jogador.dinheiro += 100
@@ -510,6 +501,16 @@ class JogoBase:
         else:
             self.mensagem_atual = "Você venceu a batalha!"
         self.aguardando_espaco = True
+
+        #aqui
+        if self.cinemon_jogador_atual.hp <= 0:
+            for cinemon in self.jogador_cinemons:
+                if cinemon.hp > 0:
+                    self.cinemon_jogador_atual = cinemon
+                    print(f"CInemon atual foi derrotado. Trocando automaticamente para {cinemon.nome}.")
+                    break
+
+
 
     def _atualizar_camera(self):
         x = self.jogador.x - LARGURA // 2
