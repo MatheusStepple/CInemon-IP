@@ -1,4 +1,3 @@
-
 from jogo_ui import JogoUI
 
 

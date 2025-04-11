@@ -25,6 +25,15 @@ class JogoUI(JogoBase):
         self.dialogo_atual = 0
         self.sprites_cache = {}  # Cache para sprites
 
+        # Carregar joy.png
+        caminho_joy = os.path.join("Desktop", "CInemon-IP", "graphics", "fotos", "joy.png")
+        try:
+            self.joy_image = pygame.image.load(caminho_joy)
+            self.joy_image = pygame.transform.smoothscale(self.joy_image, (LARGURA, ALTURA))
+        except pygame.error as e:
+            print(f"Erro ao carregar joy.png: {e}")
+            self.joy_image = pygame.Surface((LARGURA, ALTURA))
+
     def renderizar_dialogo_inicial(self):
         self.mensagem_dialogo = [
             ['Olá, treinador! Eu sou Filipe Milk, estudante do CIn e líder da resistência contra Pedro Noites.'],
@@ -190,7 +199,6 @@ class JogoUI(JogoBase):
             nome = fonte.render(cinemon.nome, True, PRETO)
             tela.blit(nome, (x + 75 - nome.get_width()//2, y + 5))
 
-           
         instrucao = fonte.render(f"Selecionados: {len(self.cinemons_escolhidos)}/3 - ENTER para confirmar", True, PRETO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
 
@@ -216,14 +224,19 @@ class JogoUI(JogoBase):
                     self.iniciar_batalha()
 
     def renderizar_dialogo_npc(self):
-        tela.fill(AZUL_ESCURO)
+        # Enquanto o diálogo estiver ativo, verifica se é com a Enfermeira Joy para exibir joy.png
+        if self.em_dialogo_npc and self.npc_atual and self.npc_atual.nome == 'Enfermeira Joy':
+            tela.blit(self.joy_image, (0, 0))
+        else:
+            tela.fill(AZUL_ESCURO)
+
         pygame.draw.rect(tela, BRANCO, (50, ALTURA - 200, LARGURA - 100, 150))
         pygame.draw.rect(tela, PRETO, (50, ALTURA - 200, LARGURA - 100, 150), 2)
         
         texto = fonte.render(self.mensagem_dialogo[self.dialogo_atual], True, PRETO)
         tela.blit(texto, (70, ALTURA - 180))
         
-        if self.dialogo_atual == 1 and self.jogador.dinheiro >= 50:
+        if self.dialogo_atual == 1 and self.jogador.dinheiro >= 50 and self.resposta_npc is None:
             instrucao = fonte.render("S para Sim | N para Não", True, PRETO)
         else:
             instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
@@ -240,11 +253,25 @@ class JogoUI(JogoBase):
                     else:
                         self.em_dialogo_npc = False
                         self.estado = "mapa"
-                elif self.dialogo_atual == 1 and self.jogador.dinheiro >= 50:
+                        self.npc_atual = None  # Limpa o NPC atual apenas ao final do diálogo
+                        self.dialogo_atual = 0
+                elif self.dialogo_atual == 1 and self.jogador.dinheiro >= 50 and self.resposta_npc is None:
                     if evento.key == pygame.K_s:
                         self.responder_dialogo_npc('sim')
                     elif evento.key == pygame.K_n:
                         self.responder_dialogo_npc('nao')
+
+    def responder_dialogo_npc(self, resposta):
+        if resposta == 'sim' and self.jogador.dinheiro >= 50:
+            self.jogador.dinheiro -= 50
+            for cinemon in self.jogador_cinemons:
+                cinemon.hp = cinemon.hp_max  # Cura total
+            self.mensagem_dialogo = ["Enfermeira Joy: Seus CInemons estão como novos!"]
+            self.dialogo_atual = 0
+        elif resposta == 'nao':
+            self.mensagem_dialogo = ["Enfermeira Joy: Tudo bem, volte quando precisar!"]
+            self.dialogo_atual = 0
+        self.resposta_npc = None  # Mantém o estado do diálogo ativo para continuar exibindo a imagem
 
     def mostrar_status_cinemons(self):
         tela.fill(AZUL_ESCURO)

@@ -54,9 +54,9 @@ class Personagem:
     def mover(self, dx, dy):
         # Ajusta a velocidade: se o mapa for cin.tmx, velocidade vira 1
         if self.mapa_atual == 'cin.tmx':
-            self.velocidade = 2
+            self.velocidade = 7
         else:
-            self.velocidade = 4
+            self.velocidade = 8
 
         self.x_anterior = self.x
         self.y_anterior = self.y
