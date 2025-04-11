@@ -353,16 +353,18 @@ class JogoUI(JogoBase):
 
         self.jogador.desenhar(tela, self.camera, self.zoom)
 
-        if self.mapa_atual == 'arroz.tmx':
+        if self.mapa_atual == 'cin.tmx':
             self.pedro.desenhar(tela, self.camera, self.zoom)
         elif self.mapa_atual == 'basic.tmx':
-            self.Fernanda.desenhar(tela, self.camera, self.zoom)
             self.Sergio.desenhar(tela, self.camera, self.zoom)
+            self.Fernanda.desenhar(tela, self.camera, self.zoom)
+            self.Ricardo.desenhar(tela,self.camera, self.zoom)
             for npc in self.npcs:  # Desenha todos os NPCs
                 npc.desenhar(tela, self.camera, self.zoom)
 
         for gema in self.gemas:
-            gema.desenhar(tela, self.camera, self.zoom)
+            if self.mapa_atual == 'basic.tmx':
+                gema.desenhar(tela, self.camera, self.zoom)
 
         instrucao = fonte.render("WASD/Setas: Mover | ESC: Status | ESPAÇO: Falar com NPC", True, BRANCO)
         tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 30))
@@ -384,12 +386,23 @@ class JogoUI(JogoBase):
         if self.batalha_vencida_Fernanda: 
             mensagem = fonte.render("Você já derrotou Fernanda!", True, VERMELHO)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 110))
+        if self.batalha_vencida_Ricardo: 
+            mensagem = fonte.render("Você já derrotou Ricardo!", True, VERMELHO)
+            tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 130))
             
         texto_dinheiro = fonte.render(f'Você tem {self.jogador.dinheiro} créditos', True, AMARELO)
         tela.blit(texto_dinheiro, (10, 40))
         
         texto_gemas = fonte.render(f"Gemas: {self.gemas_coletadas}", True, AMARELO)
         tela.blit(texto_gemas, (10, 70))
+        
+        # Novo: Exibir pedaços de crachá apenas se o crachá não estiver completo
+        if self.cracha_completo == 0:
+            texto_pedacos_cracha = fonte.render(f"Pedaços de Crachá: {self.pedacos_cracha}/3", True, AMARELO)
+            tela.blit(texto_pedacos_cracha, (10, 100))
+        else:
+            texto_cracha_completo = fonte.render("Crachá Completo", True, AMARELO)
+            tela.blit(texto_cracha_completo, (10, 100))
 
         if self.gemas_coletadas >= 4 and self.mostrar_mensagem_gemas:
             mensagem = fonte_grande.render("Parabéns! Você pegou as 4 gemas!", True, VERDE)

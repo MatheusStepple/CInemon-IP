@@ -53,18 +53,20 @@ class JogoBase:
         self.cinemons_disponiveis = self.criar_cinemons_disponiveis()
         self.cinemons_escolhidos = []
         self.pedro_cinemons = [
-            CInemon("Paradoxium", "ESPECIAL", 5, 20, [("Paradoxo Lógico", 30), ("Indução Forte", 40)])
-            
+            CInemon("Discretex", "ESPECIAL", 10, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
+            CInemon("Paradoxium", "ESPECIAL",20, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])        
         ]
         self.Sergio_cinemons = [
-            CInemon("Discretex", "ESPECIAL", 15, 20, [("Dano Imoral", 30), ("Chama", 40)]),
-            CInemon("Discretex", "ESPECIAL", 15, 20, [("Dano Imoral", 30), ("Chama", 40)]) ##### se liga
+            CInemon("Serpython", "FOGO", 15, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
+            CInemon("Redlion", "FOGO", 15, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)]) 
         ]
         self.Fernanda_cinemons = [
-            CInemon("Butterfault", "ESPECIAL", 15, 20, [("Dano Imoral", 30), ("Chama", 40)])
+            CInemon("Beebug", "PLANTA", 15, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
+            CInemon("Butterfault", "PLANTA", 15, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])     
         ]
         self.Ricardo_cinemons = [
-            CInemon("MinerByte", "ESPECIAL", 15, 20, [("Dano Imoral", 30), ("Chama", 40)])
+            CInemon("Bithog", "TERRA", 15, 20, [("Nanofragmentação", 20), ("Data geodo", 30)]),
+            CInemon("MinerByte", "TERRA", 15, 20, [("Overclock Quake", 30), ("Código sísmico", 40)])
         ]
         self.em_batalha = False
         self.turno_jogador = True
@@ -109,15 +111,21 @@ class JogoBase:
         # Verifica os tiles ao redor do jogador
         for x, y, tile in self.camada_porta.tiles():
             if tile and tile_x == x and tile_y == y:
-                indice_camada_porta = self.tmx_data.layers.index(self.camada_porta)
-                propriedades = self.tmx_data.get_tile_properties(x, y, indice_camada_porta)
-                if propriedades and propriedades.get("porta", False):
-                    destino = propriedades.get("destino", "cin.tmx")  # Mapa destino
-                    spawn_x = propriedades.get("spawn_x", self.map_width // 2)  # Posição de spawn (opcional)
-                    spawn_y = propriedades.get("spawn_y", self.map_height // 2)
-                    self.trocar_mapa(destino, spawn_x, spawn_y)
-                    return True
+                if self.cracha_completo == 1:
+                    indice_camada_porta = self.tmx_data.layers.index(self.camada_porta)
+                    propriedades = self.tmx_data.get_tile_properties(x, y, indice_camada_porta)
+                    if propriedades and propriedades.get("porta", False):
+                        destino = propriedades.get("destino", "cin.tmx")  # Mapa destino
+                        spawn_x = 450  # Posição de spawn (opcional)
+                        spawn_y = 950
+                        self.trocar_mapa(destino, spawn_x, spawn_y)
+                        return True
+                
+                elif self.cracha_completo == 0:
+                    self.mensagem_atual = "Você ainda não coletou todas as partes do crachá!"
+                
         return False
+            
     def trocar_mapa(self, novo_mapa, spawn_x=None, spawn_y=None):
         """Troca o mapa atual para um novo mapa TMX e rastreia o mapa anterior"""
         # Armazena o mapa atual como anterior antes de trocar
@@ -175,30 +183,21 @@ class JogoBase:
         return False
 
 
-
-
-
-
-
-
-
-
-
     def definir_posicoes(self):
         self.jogador = Personagem(1695, 710, self.map_width, self.map_height)
         self.pedro = Inimigo(450, 140 , 'Pedro')
-        self.Ricardo = Inimigo(190, 340, 'Ricardo')
-        self.Sergio = Inimigo(1350, 740, 'Sergio')
-        self.Fernanda = Inimigo(190, 960, 'Fernanda')
+        self.Ricardo = Inimigo(450, 295, 'Ricardo')
+        self.Sergio = Inimigo(1345, 765, 'Sergio')
+        self.Fernanda = Inimigo(192, 988, 'Fernanda')
         self.npcs = [
-        NPC(400, 200, 'Fernanda1', "spr_fernanda_madeiral.png"),
+        NPC(770, 900, 'Fernanda1', "spr_enfermeira_joy.png"),
         
     ]
         self.gemas = [
-            Gema(150, 150),
-            Gema(250, 400),
-            Gema(450, 300),
-            Gema(700, 500),
+            Gema(400, 520),
+            Gema(450, 100),
+            Gema(1675, 1045),
+            Gema(320, 1230),
         ]
 
     def _criar_mapa_colisao(self):
@@ -217,9 +216,6 @@ class JogoBase:
         if 0 <= tile_x < self.tmx_data.width and 0 <= tile_y < self.tmx_data.height:
             return self.mapa_colisao[tile_x][tile_y]
         return True
-
-
-
 
 
     def verificar_colisao_personagem(self, rect):
@@ -247,10 +243,10 @@ class JogoBase:
             CInemon("Aqualynx", "AGUA", 10, 125, [("Onda de Dados", 25), ("Debbubble", 30)]),
             CInemon("Grasscat", "PLANTA", 10, 115, [("Árvore Binária", 20), ("Trepadeira Viral", 25)]),
             CInemon("Aetherbyte", "ELETRICO", 10, 105, [("Nanotrovoada", 30), ("Corrente de Dados", 20)]),
-            CInemon("Terrabyte", "TERRA", 10, 135, [("Código Sísmico", 35), ("Data Geodo", 25)]),
+            CInemon("Granitex", "TERRA", 10, 135, [("Código Sísmico", 35), ("Data Geodo", 25)]),
             CInemon("Bitwhale", "AGUA", 10, 120, [("Bubblesorted", 25), ("Maremoto Quântico", 30)]),
             CInemon("Leafbyte", "PLANTA", 10, 125, [("Cipó Cibernético", 20), ("Sistema de Vinhas", 25)]),
-            CInemon("Amberfang", "FOGO", 10, 110, [("Vírus Ígneo", 30), ("Nano Queimadura", 20)])
+            CInemon("Emberfang", "FOGO", 10, 110, [("Vírus Ígneo", 30), ("Nano Queimadura", 20)])
         ]
 
     def verificar_colisao(self):
@@ -264,9 +260,15 @@ class JogoBase:
                 self.inimigo_atual = 'Pedro'
                 #dialogos pedro
                 self.mensagem_dialogo = [
-                    "Pedro Manhães: Você ousa se opor à minha revolução?",
-                    "Pedro Manhães: Prepare-se para enfrentar as consequências!",
-                    "Pedro Manhães: Vamos resolver isso com uma batalha de CInemons!"
+                    "Pedro Noites: Você ousa se opor à minha revolução?",
+                    "Pedro Noites: Você conseguiu roubar meus experimentos.",
+                    "Pedro Noites: Prepare-se para enfrentar as consequências!",
+                    "Pedro Noites: Você realmente acha que conhece todos os meus truques?",
+                    "Pedro Noites: Prepare-se, porque eu guardei o melhor para o fim.",
+                    "Pedro Noites: Existe um tipo secreto de CInemon, algo que eu desenvolvi nas sombras...",
+                    "Pedro Noites: Um poder que nem mesmo você pode imaginar.",
+                    "Pedro Noites: Você verá o que acontece quando se desafia o verdadeiro mestre!",
+                    "Pedro Noites: Vamos resolver isso com uma batalha de CInemons!"
                 ]
                 self.dialogo_atual = 0
                 self.estado = "dialogo"
@@ -277,7 +279,7 @@ class JogoBase:
                 self.inimigo_atual = 'Sergio'
                 #dialogos sergio
                 self.mensagem_dialogo = [
-                    "Sergio: Como você ousa falar mal de front end",
+                    "Sergio: Como você ousa falar mal de Sergiogol",
                     "Sergio: Prepare-se para enfrentar as consequências!",
                     "Sergio: Vamos resolver isso com uma batalha de CInemons!"
                 ]
@@ -290,7 +292,7 @@ class JogoBase:
                 self.inimigo_atual = 'Fernanda'
                 #dialogos Fernanda
                 self.mensagem_dialogo = [
-                    "Fernanda: como você ousa falar mal do meu lol",
+                    "Fernanda: Como você ousa falar durante a chamada!",
                     "Fernanda: Prepare-se para enfrentar as consequências!",
                     "Fernanda: Vamos resolver isso com uma batalha de CInemons!"
                 ]
@@ -302,9 +304,9 @@ class JogoBase:
                 self.inimigo_atual = 'Ricardo'
                 #dialogos Ricardo
                 self.mensagem_dialogo = [
-                    "ricardo: como você ousa falar mal do meu cin",
-                    "ricardo: Prepare-se para enfrentar as consequências!",
-                    "ricardo: Vamos resolver isso com uma batalha de CInemons!"
+                    "Ricardo: Como você ousa falar mal do meu Python... Python é MASSA",
+                    "Ricardo: Prepare-se para enfrentar as consequências!",
+                    "Ricardo: Vamos resolver isso com uma batalha de CInemons!"
                 ]
                 self.dialogo_atual = 0
                 self.estado = "dialogo"
@@ -342,12 +344,12 @@ class JogoBase:
     def processar_dialogo_npc(self):
         if self.jogador.dinheiro >= 50:
             self.mensagem_dialogo = [
-                "Fernanda: Quer gastar 50 créditos para reanimar e curar seus CInemons?",
+                "Enfermeira Joy: Quer gastar 50 créditos para reanimar e curar seus CInemons?",
                 "Pressione S para Sim ou N para Não"
             ]
         else:
             self.mensagem_dialogo = [
-                "Fernanda: Você não tem créditos suficientes!",
+                "Enfermeira Joy: Você não tem créditos suficientes!",
                 "Volte quando tiver pelo menos 50 créditos."
             ]
         self.em_dialogo_npc = True
@@ -359,10 +361,10 @@ class JogoBase:
             self.jogador.dinheiro -= 50
             for cinemon in self.jogador_cinemons:
                 cinemon.hp = cinemon.hp_max  # Cura total
-            self.mensagem_dialogo = ["Fernanda: Seus CInemons estão como novos!"]
+            self.mensagem_dialogo = ["Enfermeira Joy: Seus CInemons estão como novos!"]
             self.dialogo_atual = 0
         elif resposta == 'nao':
-            self.mensagem_dialogo = ["Fernanda: Tudo bem, volte quando precisar!"]
+            self.mensagem_dialogo = ["Enfermeira Joy: Tudo bem, volte quando precisar!"]
             self.dialogo_atual = 0
         self.resposta_npc = None
 
@@ -378,7 +380,7 @@ class JogoBase:
         elif self.inimigo_atual == 'Fernanda':
             self.cinemon_inimigo_atual = self.Fernanda_cinemons[0]
         elif self.inimigo_atual == 'Ricardo':
-            self.cinemon_inimigo_atual = self.Fernanda_cinemons[0]
+            self.cinemon_inimigo_atual = self.Ricardo_cinemons[0]
         self.mensagem_atual = f"{self.inimigo_atual} enviou {self.cinemon_inimigo_atual.nome}!"
         self.aguardando_espaco = True
 
