@@ -53,20 +53,20 @@ class JogoBase:
         self.cinemons_disponiveis = self.criar_cinemons_disponiveis()
         self.cinemons_escolhidos = []
         self.pedro_cinemons = [
-            CInemon("Discretex", "ESPECIAL", 10, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
-            CInemon("Paradoxium", "ESPECIAL",20, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])        
+            CInemon("Discretex", "ESPECIAL", 80, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
+            CInemon("Paradoxium", "ESPECIAL",200, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])        
         ]
         self.Sergio_cinemons = [
-            CInemon("Serpython", "FOGO", 15, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
-            CInemon("Redlion", "FOGO", 15, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)]) 
+            CInemon("Serpython", "FOGO", 45, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
+            CInemon("Redlion", "FOGO", 65, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)]) 
         ]
         self.Fernanda_cinemons = [
-            CInemon("Beebug", "PLANTA", 15, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
-            CInemon("Butterfault", "PLANTA", 15, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])     
+            CInemon("Beebug", "PLANTA", 85, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
+            CInemon("Butterfault", "PLANTA", 85, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])     
         ]
         self.Ricardo_cinemons = [
-            CInemon("Bithog", "TERRA", 15, 20, [("Nanofragmentação", 20), ("Data geodo", 30)]),
-            CInemon("MinerByte", "TERRA", 15, 20, [("Overclock Quake", 30), ("Código sísmico", 40)])
+            CInemon("Bithog", "TERRA", 80, 20, [("Nanofragmentação", 30), ("Data geodo", 20)]),
+            CInemon("MinerByte", "TERRA", 110, 20, [("Overclock Quake", 10), ("Código sísmico", 40)])
         ]
         self.em_batalha = False
         self.turno_jogador = True
@@ -111,19 +111,19 @@ class JogoBase:
         # Verifica os tiles ao redor do jogador
         for x, y, tile in self.camada_porta.tiles():
             if tile and tile_x == x and tile_y == y:
-                '''if self.cracha_completo == 1:'''
-                indice_camada_porta = self.tmx_data.layers.index(self.camada_porta)
-                propriedades = self.tmx_data.get_tile_properties(x, y, indice_camada_porta)
-                if propriedades and propriedades.get("porta", False):
-                    destino = propriedades.get("destino", "cin.tmx")  # Mapa destino
-                    spawn_x = 450  # Posição de spawn (opcional)
-                    spawn_y = 950
-                    self.trocar_mapa(destino, spawn_x, spawn_y)
-                    self.jogador.mapa_atual = self.mapa_atual
-                    return True
+                if self.cracha_completo == 1:
+                    indice_camada_porta = self.tmx_data.layers.index(self.camada_porta)
+                    propriedades = self.tmx_data.get_tile_properties(x, y, indice_camada_porta)
+                    if propriedades and propriedades.get("porta", False):
+                        destino = propriedades.get("destino", "cin.tmx")  # Mapa destino
+                        spawn_x = 450  # Posição de spawn (opcional)
+                        spawn_y = 950
+                        self.trocar_mapa(destino, spawn_x, spawn_y)
+                        self.jogador.mapa_atual = self.mapa_atual
+                        return True
                 
-                ''''  elif self.cracha_completo == 0:
-                    self.mensagem_atual = "Você ainda não coletou todas as partes do crachá!"'''''
+                    elif self.cracha_completo == 0:
+                        self.mensagem_atual = "Você ainda não coletou todas as partes do crachá!"
                 
         return False
             
@@ -133,33 +133,31 @@ class JogoBase:
         self.mapa_anterior = self.mapa_atual
         caminho_mapa = os.path.join("Desktop", "CInemon-IP", "data", novo_mapa)
         
-        try:
-            self.tmx_data = load_pygame(caminho_mapa)
-            print(f"Mapa trocado para {novo_mapa} com sucesso: {self.tmx_data.width}x{self.tmx_data.height}")
-            self.map_width = self.tmx_data.width * self.tmx_data.tilewidth
-            self.map_height = self.tmx_data.height * self.tmx_data.tileheight
-            self.mapa_atual = novo_mapa
+        
+        self.tmx_data = load_pygame(caminho_mapa)
+        print(f"Mapa trocado para {novo_mapa} com sucesso: {self.tmx_data.width}x{self.tmx_data.height}")
+        self.map_width = self.tmx_data.width * self.tmx_data.tilewidth
+        self.map_height = self.tmx_data.height * self.tmx_data.tileheight
+        self.mapa_atual = novo_mapa
 
-            # Atualiza as camadas
-            self.camada_colisao = self.tmx_data.get_layer_by_name("colisao")
-            self.mapa_colisao = self._criar_mapa_colisao()
-            self.camada_porta = self.tmx_data.get_layer_by_name("porta") if "porta" in [layer.name for layer in self.tmx_data.layers] else None
+        # Atualiza as camadas
+        self.camada_colisao = self.tmx_data.get_layer_by_name("colisao")
+        self.mapa_colisao = self._criar_mapa_colisao()
+        self.camada_porta = self.tmx_data.get_layer_by_name("porta") if "porta" in [layer.name for layer in self.tmx_data.layers] else None
 
-            # Reposiciona o jogador
-            self.jogador.x = spawn_x if spawn_x is not None else self.map_width // 2
-            self.jogador.y = spawn_y if spawn_y is not None else self.map_height // 2
-            self.jogador.rect.x = self.jogador.x + 8
-            self.jogador.rect.y = self.jogador.y + 18
+        # Reposiciona o jogador
+        self.jogador.x = spawn_x if spawn_x is not None else self.map_width // 2
+        self.jogador.y = spawn_y if spawn_y is not None else self.map_height // 2
+        self.jogador.rect.x = self.jogador.x + 8
+        self.jogador.rect.y = self.jogador.y + 18
 
-            # Atualiza a câmera
-            self._atualizar_camera()
+        # Atualiza a câmera
+        self._atualizar_camera()
 
             
             
 
-        except Exception as e:
-            print(f"Erro ao trocar o mapa: {e}")
-            sys.exit()
+     
 
     
 
@@ -238,16 +236,17 @@ class JogoBase:
 
     def criar_cinemons_disponiveis(self):
         return [
-            CInemon("Firewall", "FOGO", 10, 120, [("Bug Flamejante", 25), ("Firewall", 20)]),
-            CInemon("Pikacode", "ELETRICO", 10, 110, [("Raio Código", 30), ("Compile Shock", 25)]),
-            CInemon("Terrabyte", "TERRA", 10, 130, [("Terrabyte", 20), ("Overclock Quake", 35)]),
-            CInemon("Aqualynx", "AGUA", 10, 125, [("Onda de Dados", 25), ("Debbubble", 30)]),
-            CInemon("Grasscat", "PLANTA", 10, 115, [("Árvore Binária", 20), ("Trepadeira Viral", 25)]),
-            CInemon("Aetherbyte", "ELETRICO", 10, 105, [("Nanotrovoada", 30), ("Corrente de Dados", 20)]),
-            CInemon("Granitex", "TERRA", 10, 135, [("Código Sísmico", 35), ("Data Geodo", 25)]),
-            CInemon("Bitwhale", "AGUA", 10, 120, [("Bubblesorted", 25), ("Maremoto Quântico", 30)]),
-            CInemon("Leafbyte", "PLANTA", 10, 125, [("Cipó Cibernético", 20), ("Sistema de Vinhas", 25)]),
-            CInemon("Emberfang", "FOGO", 10, 110, [("Vírus Ígneo", 30), ("Nano Queimadura", 20)])
+            CInemon("Firewall", "FOGO", 90, 120, [("Bug Flamejante", 25), ("Firewall", 20)]),
+            CInemon("Pikacode", "ELETRICO", 60, 110, [("Raio Código", 40), ("Compile Shock", 35)]),
+            CInemon("Terrabyte", "TERRA", 100, 130, [("Terrabyte", 20), ("Overclock Quake", 35)]),
+            CInemon("Aqualynx", "AGUA", 70, 115, [("Onda de Dados", 30), ("Debbubble", 25)]),
+            CInemon("Grasscat", "PLANTA", 60, 110, [("Árvore Binária", 40), ("Trepadeira Viral", 35)]),
+            CInemon("Aetherbyte", "ELETRICO", 55, 105, [("Nanotrovoada", 45), ("Corrente de Dados", 40)]),
+            CInemon("Granitex", "TERRA", 100, 135, [("Código Sísmico", 25), ("Data Geodo", 25)]),
+            CInemon("Bitwhale", "AGUA", 85, 125, [("Bubblesorted", 30), ("Maremoto Quântico", 30)]),
+            CInemon("Leafbyte", "PLANTA", 65, 115, [("Cipó Cibernético", 35), ("Sistema de Vinhas", 30)]),
+            CInemon("Emberfang", "FOGO", 50, 105, [("Vírus Ígneo", 50), ("Nano Queimadura", 40)]),
+
         ]
 
     def verificar_colisao(self):

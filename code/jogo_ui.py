@@ -240,7 +240,7 @@ class JogoUI(JogoBase):
             instrucao = fonte.render("S para Sim | N para Não", True, PRETO)
         else:
             instrucao = fonte.render("Pressione ESPAÇO para continuar", True, PRETO)
-        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 50))
+        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 100)) 
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -273,26 +273,60 @@ class JogoUI(JogoBase):
             self.dialogo_atual = 0
         self.resposta_npc = None  # Mantém o estado do diálogo ativo para continuar exibindo a imagem
 
+        
     def mostrar_status_cinemons(self):
         tela.fill(AZUL_ESCURO)
         pygame.draw.rect(tela, BRANCO, (50, 50, LARGURA - 100, ALTURA - 100))
         pygame.draw.rect(tela, PRETO, (50, 50, LARGURA - 100, ALTURA - 100), 2)
 
-        titulo = fonte_grande.render("Seus CInemons", True, PRETO)
-        tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 70))
+        titulo = fonte_grande.render("CInemons", True, PRETO)
+        tela.blit(titulo, (LARGURA // 2 - titulo.get_width() // 2, 70))
 
         for i, cinemon in enumerate(self.jogador_cinemons):
-            y_pos = 150 + i * 100
-            nome = fonte.render(f"Nome: {cinemon.nome}", True, PRETO)
-            hp = fonte.render(f"HP: {cinemon.hp}/{cinemon.hp_max}", True, PRETO if cinemon.hp > 0 else VERMELHO)
+            y_pos = 150 + i * 180
+            nome_str = str(cinemon.nome)
+
+            tipo_str = getattr(cinemon, 'tipo', 'DESCONHECIDO').strip().upper()
+
+            # Painel de fundo azul escuro para melhor contraste
+            pygame.draw.rect(tela, (10, 30, 80), (80, y_pos - 40, LARGURA - 160, 160), border_radius=10)
+
+            nome = fonte.render(f"Nome: {nome_str}", True, BRANCO)
+            tipo_label = fonte.render("Tipo:", True, (255, 165, 0))
+
+            if tipo_str == "ELETRICO":
+                tipo_valor = fonte.render("ELETRICO", True, (255, 255, 0))
+            elif tipo_str == "FOGO":
+                tipo_valor = fonte.render("FOGO", True, (255, 0, 0))
+            elif tipo_str == "AGUA":
+                tipo_valor = fonte.render("AGUA", True, (0, 0, 255))
+            elif tipo_str == "PLANTA":
+                tipo_valor = fonte.render("PLANTA", True, (0, 255, 0))
+            else:
+                tipo_valor = fonte.render("TERRA", True, (80, 50, 20))
+
+            hp = fonte.render(f"HP: {cinemon.hp}/{cinemon.hp_max}", True, BRANCO if cinemon.hp > 0 else VERMELHO)
             status = fonte.render("Vivo" if cinemon.hp > 0 else "Morto", True, VERDE if cinemon.hp > 0 else VERMELHO)
-            
-            tela.blit(nome, (100, y_pos))
-            tela.blit(hp, (100, y_pos + 30))
-            tela.blit(status, (100, y_pos + 60))
+
+            try:
+                image_path = os.path.join(r"C:\Users\PC\Desktop\CInemon-IP\cinemons", f"{nome_str}.png")
+                cinemon_image = pygame.image.load(image_path)
+                cinemon_image = pygame.transform.scale(cinemon_image, (150, 150))
+                tela.blit(cinemon_image, (100, y_pos - 30))
+                text_x_offset = 270
+            except pygame.error:
+                placeholder = fonte.render("(Imagem não encontrada)", True, BRANCO)
+                tela.blit(placeholder, (100, y_pos - 30))
+                text_x_offset = 270
+
+            tela.blit(nome, (text_x_offset, y_pos))
+            tela.blit(tipo_label, (text_x_offset, y_pos + 30))
+            tela.blit(tipo_valor, (text_x_offset + 80, y_pos + 30))
+            tela.blit(hp, (text_x_offset, y_pos + 60))
+            tela.blit(status, (text_x_offset, y_pos + 90))
 
         instrucao = fonte.render("Pressione ESC para voltar ao mapa", True, PRETO)
-        tela.blit(instrucao, (LARGURA//2 - instrucao.get_width()//2, ALTURA - 70))
+        tela.blit(instrucao, (LARGURA // 2 - instrucao.get_width() // 2, ALTURA - 80))
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -301,6 +335,8 @@ class JogoUI(JogoBase):
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_ESCAPE:
                     self.mostrar_status = False
+
+
 
     def verificar_coleta_gemas(self):
         for gema in self.gemas:
@@ -423,20 +459,15 @@ class JogoUI(JogoBase):
                 True, BRANCO)
             tela.blit(cinemon_info, (10, 10))
         
-        if self.batalha_vencida_pedro:
-            mensagem = fonte.render("Você já derrotou Pedro Manhães!", True, AZUL)
-            tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 50))
-            self.estado = "creditos"
-            
         if self.batalha_vencida_Sergio:
-            mensagem = fonte.render("Você já derrotou Sergio!", True, VERDE)
+            mensagem = fonte.render("Você derrotou Sergio!", True, VERDE)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 90))
             
         if self.batalha_vencida_Fernanda: 
-            mensagem = fonte.render("Você já derrotou Fernanda!", True, VERMELHO)
+            mensagem = fonte.render("Você derrotou Fernanda!", True, VERMELHO)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 110))
         if self.batalha_vencida_Ricardo: 
-            mensagem = fonte.render("Você já derrotou Ricardo!", True, VERMELHO)
+            mensagem = fonte.render("Você derrotou Ricardo!", True, VERMELHO)
             tela.blit(mensagem, (LARGURA//2 - mensagem.get_width()//2, 130))
             
         texto_dinheiro = fonte.render(f'Você tem {self.jogador.dinheiro} créditos', True, AMARELO)
