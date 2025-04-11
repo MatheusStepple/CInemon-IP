@@ -80,20 +80,20 @@ class JogoBase:
         self.cinemons_disponiveis = self.criar_cinemons_disponiveis()
         self.cinemons_escolhidos = []
         self.pedro_cinemons = [
-            CInemon("Discretex", "ESPECIAL", 100, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
-            CInemon("Paradoxium", "ESPECIAL", 200, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 40)])
+            CInemon("Discretex", "ESPECIAL", 111, 20, [("Saco Vazio", 20), ("Indução Forte", 30)]),
+            CInemon("Paradoxium", "ESPECIAL", 199, 20, [("Paradoxo Lógico", 30), ("Explosão Combinatória", 30)])
         ]
         self.Sergio_cinemons = [
             CInemon("Serpython", "FOGO", 50, 20, [("Bits-flamejante", 20), ("Nano Queimadura", 30)]),
-            CInemon("Redlion", "FOGO", 50, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 40)])
+            CInemon("Redlion", "FOGO", 50, 20, [("Vírus Ígneo", 30), ("Firewall Infernal", 30)])
         ]
         self.Fernanda_cinemons = [
             CInemon("Beebug", "PLANTA", 50, 20, [("Trepadeira viral", 20), ("Sistema de vinhas", 30)]),
-            CInemon("Butterfault", "PLANTA", 50, 20, [("Árvore binária", 30), ("Cipó cibernético", 40)])
+            CInemon("Butterfault", "PLANTA", 50, 20, [("Árvore binária", 25), ("Cipó cibernético", 30)])
         ]
         self.Ricardo_cinemons = [
-            CInemon("Bithog", "TERRA", 80, 20, [("Nanofragmentação", 30), ("Data geodo", 20)]),
-            CInemon("MinerByte", "TERRA", 110, 20, [("Overclock Quake", 10), ("Código sísmico", 40)])
+            CInemon("Bithog", "TERRA", 80, 20, [("Nanofragmentação", 20), ("Data geodo", 20)]),
+            CInemon("MinerByte", "TERRA", 90, 20, [("Overclock Quake", 10), ("Código sísmico", 20)])
         ]
         self.em_batalha = False
         self.turno_jogador = True
