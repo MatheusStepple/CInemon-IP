@@ -37,96 +37,96 @@
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2193">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2194">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2200">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2201">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2202">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2208">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2209">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2210">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2216">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2217">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
  <tile id="2218">
   <properties>
    <property name="destino" value="cin.tmx"/>
    <property name="porta" type="bool" value="true"/>
-   <property name="spawn_x" type="int" value="450"/>
-   <property name="spawn_y" type="int" value="950"/>
+   <property name="spawn_x" type="int" value="950"/>
+   <property name="spawn_y" type="int" value="450"/>
   </properties>
  </tile>
 </tileset>

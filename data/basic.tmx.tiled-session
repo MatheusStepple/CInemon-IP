@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "C:/Users/PC/Downloads/pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx",
+    "activeFile": "basic.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -138,11 +138,11 @@
             }
         },
         "basic.tmx": {
-            "scale": 1,
-            "selectedLayer": 3,
+            "scale": 3,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 863,
-                "y": 928
+                "x": 479,
+                "y": 268.3333333333333
             }
         },
         "basic.tmx#fakemon_region_starting_town___nuevo_town_by_stopdrawingcartoons_dek37jy-pre": {
@@ -175,11 +175,11 @@
             "scaleInDock": 1
         },
         "cin.tmx": {
-            "scale": 0.8349609375,
-            "selectedLayer": 0,
+            "scale": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 511.40116959064324,
-                "y": 353.3099415204679
+                "x": 500,
+                "y": 408
             }
         },
         "objetos.tmx": {
@@ -196,12 +196,12 @@
         },
         "pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1.5,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "tiles padrao.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 0.0625,
+            "scaleInDock": 0.25,
             "scaleInEditor": 0.25
         }
     },
@@ -214,14 +214,15 @@
     "map.width": 100,
     "openFiles": [
         "basic.tmx",
-        "C:/Users/PC/Downloads/pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx"
+        "C:/Users/PC/Downloads/pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx",
+        "cin.tmx"
     ],
     "project": "basic.tmx.tiled-project",
     "property.type": "int",
     "recentFiles": [
-        "basic.tmx",
-        "C:/Users/PC/Downloads/pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx",
         "cin.tmx",
+        "C:/Users/PC/Downloads/pokemon_tileset_from_public_tiles_32x32_by_chaoticcherrycake_dab2byf.tsx",
+        "basic.tmx",
         "C:/Users/PC/Downloads/basic (1).tmx",
         "arroz.tmx",
         "tiles padrao.tsx",
