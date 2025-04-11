@@ -309,7 +309,7 @@ class JogoUI(JogoBase):
             status = fonte.render("Vivo" if cinemon.hp > 0 else "Morto", True, VERDE if cinemon.hp > 0 else VERMELHO)
 
             try:
-                image_path = os.path.join(r"C:\Users\PC\Desktop\CInemon-IP\cinemons", f"{nome_str}.png")
+                image_path = os.path.join("Desktop", "CInemon-IP", "cinemons", f"{nome_str}.png")
                 cinemon_image = pygame.image.load(image_path)
                 cinemon_image = pygame.transform.scale(cinemon_image, (150, 150))
                 tela.blit(cinemon_image, (100, y_pos - 30))
