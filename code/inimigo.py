@@ -12,7 +12,7 @@ class Inimigo:
         # Define a cor e a imagem com base no nome do inimigo
         if nome == 'Pedro':
             self.cor = VERMELHO
-            caminho_imagem = os.path.join("Desktop", "CInemon-IP",  "sprites", "spr_pedro_manhaes2.png")
+            caminho_imagem = os.path.join("sprites", "spr_pedro_manhaes2.png")
             
             self.imagem = pygame.image.load(caminho_imagem)
             self.imagem = pygame.transform.scale(self.imagem, (32, 32))
@@ -20,7 +20,7 @@ class Inimigo:
             
         elif nome == 'Fernanda':
             self.cor = VERDE
-            caminho_imagem = os.path.join("Desktop", "CInemon-IP", "sprites", "spr_fernanda_madeiral_2.1.png")
+            caminho_imagem = os.path.join("sprites", "spr_fernanda_madeiral_2.1.png")
            
             
             self.imagem = pygame.image.load(caminho_imagem)
@@ -29,7 +29,7 @@ class Inimigo:
             
         elif nome == 'Sergio':
             self.cor = LARANJA
-            caminho_imagem = os.path.join("Desktop", "CInemon-IP", "sprites", "spr_sergio_soares.png")
+            caminho_imagem = os.path.join("sprites", "spr_sergio_soares.png")
             
             self.imagem = pygame.image.load(caminho_imagem)
             self.imagem = pygame.transform.scale(self.imagem, (32, 32))
@@ -37,7 +37,7 @@ class Inimigo:
         
         elif nome == 'Ricardo':
             self.cor = LARANJA
-            caminho_imagem = os.path.join("Desktop", "CInemon-IP", "sprites", "spr_ricardo_2.1-export.png")
+            caminho_imagem = os.path.join("sprites", "spr_ricardo_2.1-export.png")
             
             
             self.imagem = pygame.image.load(caminho_imagem)

@@ -26,20 +26,20 @@ class Personagem:
         # Dicionário com sprites para cada direção
         self.sprites = {
             "direita": [
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_direita.png")).convert_alpha(),
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_andar_direita.png")).convert_alpha()
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_direita.png")).convert_alpha(),
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_andar_direita.png")).convert_alpha()
             ],
             "esquerda": [
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_esquerda.png")).convert_alpha(),
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_andar_esquerda.png")).convert_alpha()
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_esquerda.png")).convert_alpha(),
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_andar_esquerda.png")).convert_alpha()
             ],
             "baixo": [
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_frente.png")).convert_alpha(),
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_andar_baixo.png")).convert_alpha()
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_frente.png")).convert_alpha(),
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_andar_baixo.png")).convert_alpha()
             ],
             "cima": [
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_costas.png")).convert_alpha(),
-                pygame.image.load(os.path.join("Desktop", "CInemon-IP", "sprites", "Protagonista", "protagonista_andar_cima.png")).convert_alpha()
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_costas.png")).convert_alpha(),
+                pygame.image.load(os.path.join("sprites", "Protagonista", "protagonista_andar_cima.png")).convert_alpha()
             ]
         }
 

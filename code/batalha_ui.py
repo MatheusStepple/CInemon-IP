@@ -21,7 +21,7 @@ class BatalhaUI(JogoBase):
         if chave_cache in self.sprites_cache:
             return self.sprites_cache[chave_cache]
         
-        sprite_path = os.path.join(r"Desktop\CInemon-IP\cinemons", f"{nome}.png")
+        sprite_path = os.path.join(r"cinemons", f"{nome}.png")
         try:
             sprite = pygame.image.load(sprite_path).convert_alpha()
             sprite = pygame.transform.scale(sprite, tamanho)
@@ -190,8 +190,13 @@ class BatalhaUI(JogoBase):
                     elif jogo.cinemon_jogador_atual.hp <= 0 and any(c.hp > 0 for c in jogo.jogador_cinemons):
                         jogo.estado = "trocar_cinemon"
                     elif jogo.cinemon_jogador_atual.hp <= 0 and not any(c.hp > 0 for c in jogo.jogador_cinemons):
-                        pygame.quit()
-                        sys.exit()
+                        
+                        
+                        
+                        #aqui
+                        jogo.estado = 'game_over'
+                        
+                        
                     elif jogo.fase_batalha == 1:
                         jogo.fase_batalha = 2
                         jogo.turno_jogador = False

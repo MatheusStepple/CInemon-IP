@@ -14,7 +14,7 @@ class Gema:
         self.rect = pygame.Rect(self.x + 8, self.y + 8, 16, 16)  # Hitbox menor para colisão
         
         # Carrega o sprite da gema
-        sprite_path = os.path.join("Desktop", "CInemon-IP", "sprites", "spr_gema_coletável_2.png")
+        sprite_path = os.path.join("sprites", "spr_gema_coletável_2.png")
         
         
         self.sprite = pygame.image.load(sprite_path).convert_alpha()
