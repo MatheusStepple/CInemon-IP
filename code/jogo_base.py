@@ -357,7 +357,7 @@ class JogoBase:
         self.resposta_npc = None
 
     def iniciar_batalha(self):
-        #aqui
+        
         if self.cinemon_jogador_atual is None or self.cinemon_jogador_atual.hp <= 0:
             for cinemon in self.jogador_cinemons:
                 if cinemon.hp > 0:
@@ -473,7 +473,7 @@ class JogoBase:
             self.batalha_vencida_pedro = True
             self.jogador.dinheiro += 100
             
-            #aqui
+            
             self.estado = 'creditos'
         elif self.inimigo_atual == 'Sergio':
             self.batalha_vencida_Sergio = True
@@ -502,7 +502,7 @@ class JogoBase:
             self.mensagem_atual = "Você venceu a batalha!"
         self.aguardando_espaco = True
 
-        #aqui
+        
         if self.cinemon_jogador_atual.hp <= 0:
             for cinemon in self.jogador_cinemons:
                 if cinemon.hp > 0:
